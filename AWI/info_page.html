@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <meta name="viewport" content="width=1024">
+
+        <title>globalwarmingindex.org -- Tracking progress to a safe climate</title>
+
+        <link href="therm.css" rel="stylesheet">
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <header>
+
+                <h1>globalwarmingindex.org</h1>
+
+                <p class="strapline">Tracking progress to a safe climate<p>
+
+            </header>
+
+            <article>
+
+                <div class="details">
+
+
+
+                    <h3>What is human-induced warming?</h3>
+
+                    <p>The <a href="http://www.globalwarmingindex.org">globalwarmingindex.org</a> website shows an up-to-the-second
+
+index of human-induced warming relative to the second half of the 19th century (1850-1900) based on the standard "detection and attribution" approach introduced
+
+by <a href="http://link.springer.com/article/10.1007/s003820050185">Hasselmann (1997)</a>, first introduced in
+
+<a href="http://www.nature.com/nclimate/journal/v5/n10/full/nclimate2716.html">Otto et al. (2015)</a> and published with a comprehensive
+uncertainty analysis in <a href="http://www.nature.com/articles/s41598-017-14828-5">Haustein et al. (2017)</a>.
+The authors affiliations are as follows:<br><br>
+
+<b>Karsten Haustein</b>, <i>Postdoctoral Researcher, Environmental Change Institute, University of Oxford, UK</i> (<a href="https://twitter.com/khaustein">@khaustein</a>)<br>
+<b>Myles R Allen</b>, <i>Professor of Geosystem Science, Environmental Change Institute, University of Oxford, UK</i>.<br>
+<b>Piers M Forster</b>, <i>Director Priestley International Centre for Climate, University of Leeds, UK</i> (<a href="http://twitter.com/piersforster">@piersforster</a>)<br>
+<b>Friederike E L Otto</b>, <i>Deputy Director Environmental Change Institute, University of Oxford, UK</i> (<a href="https://twitter.com/FrediOtto">@frediotto</a>)<br>
+<b>Daniel M Mitchell</b>, <i>Proleptic Lecturer, School of Geographical Sciences, University of Bristol</i> (<a href="https://twitter.com/ClimateDann">@climatedann</a>)<br>
+<b>H Damon Matthews</b>, <i>Professor and Concordia Research Chair, Department of Geography Planning and Environment, Concordia University Montreal</i> (<a href="https://twitter.com/damon_matthews">@damon_matthews</a>)<br>
+<b>David J Frame</b>, <i>Director New Zealand Climate Change Research Institute, School of Geography, Environment and Earth Sciences, Victoria University of Wellington</i>.<br>
+</p>
+
+<p>The index estimates contributions to observed climate change and removes the impact of natural year-to-year fluctuations, by a simple least-squares-fit
+between observed temperatures provided by four different research centers (<a href="https://www.metoffice.gov.uk/hadobs/hadcrut4/">UK Met Office</a>; 
+<a href="http://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html">Cowtan and Way</a>; <a href="https://www.esrl.noaa.gov/psd/data/gridded/data.noaaglobaltemp.html">NOAA</a>;
+<a href="https://data.giss.nasa.gov/gistemp/maps/">NASA</a>; black line) at the end of every month and estimated responses to human-induced and natural drivers
+of climate change (orange and blue lines). The forcing responses are provided by the standard simple climate model given in
+<a href="http://www.climatechange2013.org/images/report/WG1AR5_Ch08SM_FINAL.pdf">Chapter 8</a> of IPCC (2013), but the size of these responses (and so the climate sensitivity)
+is estimated by the fit to the observations. The animated image below demonstrates the methodology that we apply to obtain the final Global Warming Index.</p><br>
+
+<img src="AWI_AR5_new_anim.gif" alt="Animation of GWI methodology" style="width:780px;">
+
+<p><small><i>Animation of the main steps needed to estimate the Global Warming Index. The first and second step shows observations and natural
+
+and anthropogenic foring estimates (W/m2), including 200 different realisations that comprise the full forcing uncertainty. The third step is the
+
+application of the response model which converts forcing in a fast and slow temperature equivalent as a function of the best estimate for TCR, ECS
+
+and the response times. In the fourth and fifth step, the sum of the two responses before regression with the observed temperature is shown
+
+together with the resulting combined temperature response (red). The sixth step is the same response after multiplying it with the slope provided
+
+by the the least-square-fit between temperature and natural/anthropogenic response. Finally, the full uncertainty range for the natural and the
+
+human-induced contributions is estimated and added to the graph. </i></small></p><br>
+
+ 
+
+<p> The plumes in the Global Warming Index show the 5-95% ranges in estimated human-induced and natural warming due to uncertainties in
+
+<a href="http://www.metoffice.gov.uk/hadobs/hadcrut5/">UK observations</a> (100 possible variations), <a href="forcing.txt">forcing</a> (200 possible variations) and response model (20 possible variations). The forcing shape uncertainty is estimated using a Monte Carlo method as applied in Box 9.2 in
+
+<a href="http://www.climatechange2013.org/images/report/WG1AR5_Chapter09_FINAL.pdf">Chapter 9</a> of IPCC (2013) and further detailed in
+
+<a href="http://people.oregonstate.edu/~schmita2/Teaching/ATS421-521/2013/papers/forster13jgr.pdf">Forster et al 2013</a>. The response model
+
+uncertainty covers a wide range of TCR/ECS (Transient Climate Response/Equilibrium Climate Sensitivity) ratios as well as fast response times.
+
+The contribution to the overall uncertainty is small, however. Instead, the total uncertainty is dominated by the forcing uncertainty. </p>
+
+<p>A supplementary <b>speadsheet</b> to calculate the monthly index with data up to the lastest months is <a href="AWI_AR5_new_spreadsheet.xlsx">available for download here.</a></p>
+
+
+<p>As shown in the second plot on the <a href="../index.html">main page</a>, we have expressed the total effect of other human influences on climate by how much they reduce outgoing energy, in units of Watts per square metre (W/m<sup>2</sup>). Added up over the entire planet, 1 W/m<sup>2</sup> from these other influences has approximately the same impact on global temperature as the emission of 1 trillion tonnes of carbon dioxide (CO<sub>2</sub>). Hence total carbon dioxide emissions in trillion tonnes of CO<sub>2</sub> plus other human influences in W/m<sup>2</sup>, all multiplied by the “Transient Climate Response to Emissions” (approximately 0.4°C/TtCO<sub>2</sub>), gives total human-induced warming. The carbon dioxide emissions counter uses the most recent update of the Global Carbon Project’s Global Carbon Budget, available <a href="https://www.globalcarbonproject.org/carbonbudget">here</a>. Human-induced warming and radiative forcing are expressed relative to the 1850-1900 period and CO<sub>2</sub> emissions are cumulative from 1875.</p>
+
+<!-- <p>Another supplementary <b>speadsheet</b> to calculate the cumulative emissions is <a href="Global_Carbon_Budget_2019.xlsx">available for download here.</a></p> -->
+
+
+<p>In addition, the choice of the observational data set and the reference period have a noticeable impact on the results. While initially, the GWI was expressed
+relative to the 30-year average of the standard reference period 1850-1879, which is characterised by little volcanic activity, and hence comparable
+to the most recent 25 years, the IPCC is using a alternative, longer reference period from 1850-1900. Because of that, GWI now uses the same 1850-1900 baseline.
+Since this period is affected by the Krakatoa eruption, both the human-induced warming fraction and the and natural contribution are notably different as illustrated
+in the figure below. However, the uncertainty due to different observational datasets is considerably higher. While this may not be a problem in the longer term as datasets
+are further refined, there have (cool) been biases due the missing coverage of the rapidly warming Arctic areas, which is still the case in the version of NOAA-MLOST used here.
+We note that the UK Met Office has updated their global temperature dataset HadCRUT4 to HadCRUT5 at the end of 2020, which led to a notable increase in the GWI as HadCRUT5 covers the Arctic.
+To reflect these uncertainties, the IPCC is using the aggregate average of four common global mean temperature datasets: HadCRUT4 (now replaced by HadCRUT5), HadCRUT4-Cowtan/Way, NOAA-MLOST and
+NASA GISTEMP. For the current version of the GWI, we adopted the IPCC approach and provide the estimate for the human-induced warming based on those four dataset.</p><br>
+
+
+
+<img src="AWI_AR5_new_info.png" alt="Global Warming Index for HadCRUT4 and HadCRUT4-Cowtan/Way for two reference periods" style="width:900px;">
+
+
+
+<p><small><i>Top row: GWI based on HadCRUT4 and the standard 1850-79 reference period (left), or the longer 1850-1900 alternative reference period.
+Bottom row: As top row but using HadCRUT4-Cowtan/Way as observational data set. It covers remote polar regions which have seen stronger warming in recent
+years, leading to a higher fraction of human-induced attributable warming.</i></small></p><br>
+
+
+
+<p> We note that the monthly index uncertainty range is +/-0.0013K (95% confidence level). By this we refer to the uncertainty introduced by
+adding a new datapoint to the observed monthly temperature, or, in other words, it is the monthly variability of the Global Warming Index.</p>
+
+ 
+
+                   <h3>Relevant Papers</h3>
+
+<p><i>Haustein, K. et al. (2017). A global warming index. Nature Scientific Reports, doi:10.1038/s41598-017-14828-5<br>
+Otto, F.E.L. et al. (2015). Embracing uncertainty in climate change policy. Nature Climate Change, doi:10.1038/nclimate2716<br>
+
+Forster, P. et al. (2013). Evaluating adjusted forcing and model spread for historical and future scenarios in the CMIP5 generation of climate models.
+
+Journal of Geophysical Research, 118, 1-12, doi:10.1002/jgrd.50174<br>
+Hasselmann, K. (1997). Multi-pattern fingerprint method for detection and attribution of climate change. Climate Dynamics, 13(9), 601-611</i></p>
+
+<br><br>
+
+
+
+		    <p><a href="../index.html">Main page</a></p>
+
+		</div>
+
+            </article>
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+        <script>if (typeof jQuery === 'undefined') {
+
+                document.write(unescape('%3Cscript%20src%3D%22/js/jquery-2.1.4.min.js%22%3E%3C/script%3E')); }
+
+        </script>
+
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script> -->
+
+        <script src="snap.svg-min.js"></script>
+
+        <script src="config.js"></script>
+
+        <script src="app.min.js"></script>
+
+        <script src="expand.js"></script>
+
+        <script type="text/javascript">
+
+            function toggle(obj) {
+
+                var obj=document.getElementById(obj);
+
+                if (obj.style.display == "block") obj.style.display = "none";
+
+                else obj.style.display = "block";
+
+            }
+
+        </script>
+
+        
+
+
+
+    </body>
+
+</html>
+
+
