@@ -1,0 +1,12 @@
+build:
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  stage: build
+  script:
+      - sh -x build.sh
+      - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+      - docker build -t gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker .
+      - docker push gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker
