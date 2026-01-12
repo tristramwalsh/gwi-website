@@ -8,5 +8,15 @@ build:
   script:
       - sh -x build.sh
       - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-      - docker build -t gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker .
-      - docker push gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker
+      
+      # 1. Build and push specific tag for this branch (e.g. :development)
+      #    This allows testing "development" without breaking "live".
+      - docker build -t gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker:$CI_COMMIT_REF_SLUG .
+      - docker push gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker:$CI_COMMIT_REF_SLUG
+
+      # 2. Update the live site tag (:latest) ONLY if we are on the main branch
+      - |
+        if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+          docker tag gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker:$CI_COMMIT_REF_SLUG gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker:latest
+          docker push gitlab.ouce.ox.ac.uk:4567/gwi/gwi-docker:latest
+        fi
