@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.insert(0, '/var/www/html/AWI/api')
+sys.path.insert(0, '/var/www/html/api')
 
 from temp_api import app
 
