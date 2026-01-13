@@ -9,3 +9,9 @@ __pycache__/
 # OS files
 .DS_Store
 
+# Build artifacts
+gwi.tar
+
+# Generated data (built from public/assets/data/source/*)
+public/assets/data/current_climate_state.json
+
