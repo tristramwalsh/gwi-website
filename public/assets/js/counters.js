@@ -1,96 +1,98 @@
 (function() {
     // Configuration
-    const updateInterval = 50; // Update every 50ms (20fps) is sufficient for text
-    const billion = 1000000000;
+    const updateInterval = 50; // Update every 50ms (20fps)
 
-    let climateData = null;
-    let basisTimestamp = 0; // Seconds since epoch
-    let ratePerSec = 0;
-    let baseLevel = 0;
+    let gwiData = null;
+    let erfData = null;
+    let co2Data = null;
 
-    const OLD_BASIS_DATE = new Date("12/15/2020 00:00 AM");
-
-    function calculateNonCO2_RF(t_old) {
-        return (0.85 + (t_old * 0.0017 * 12 / (86400 * 365)));
-    }
-
-    function calculateCarbonEmissions(t_old) {
-        return ((t_old * 365 * 44 / 12 + 2394.0 * billion));
+    // Helper: Calculate current value based on linear model
+    function calculateCurrentValue(basisDateIso, level, ratePerSec) {
+        if (!basisDateIso) return 0;
+        const basisTimestamp = new Date(basisDateIso).getTime() / 1000;
+        const now = new Date().getTime() / 1000;
+        const dt = now - basisTimestamp;
+        return level + (ratePerSec * dt);
     }
 
     function init() {
-        // Initialize Counter
-        fetch('assets/data/current_climate_state.json')
-            .then(response => response.json())
-            .then(data => {
-                climateData = data;
-                
-                // Parse basis date (UTC)
-                const basisDate = new Date(data.basis_datetime_utc);
-                basisTimestamp = basisDate.getTime() / 1000; // to seconds
+        // Fetch all data sources in parallel
+        Promise.all([
+            fetch('assets/data/current_climate_state.json').then(r => r.json()),
+            fetch('assets/data/current_erf_state.json').then(r => r.json()),
+            fetch('assets/data/current_emissions_state.json').then(r => r.json())
+        ])
+        .then(([gwi, erf, co2]) => {
+            gwiData = gwi;
+            erfData = erf;
+            co2Data = co2;
 
-                // Use the 50th percentile as the main display
-                const warmingInfo = data.anthropogenic_warming['50'];
-                baseLevel = warmingInfo.level;
-                ratePerSec = warmingInfo.rate_per_sec;
-
-                // Start the loop
-                setInterval(updateCounter, updateInterval);
-                updateCounter(); // Run once immediately
-            })
-            .catch(err => console.error("Error loading climate state:", err));
+            // Start loop
+            setInterval(updateCounter, updateInterval);
+            updateCounter();
+        })
+        .catch(err => console.error("Error loading climate data:", err));
     }
 
     function updateCounter() {
-        if (!climateData) return;
-
         const now = new Date();
-        const currentTimestamp = now.getTime() / 1000;
-        
-        // --- Temperature Warming (New Data) ---
-        const t_new = currentTimestamp - basisTimestamp;
-        const currentWarming = baseLevel + (ratePerSec * t_new);
-        
-        let outputHTML = (currentWarming >= 0) ? "+" : "-";
-        outputHTML += currentWarming.toFixed(9); // Matches old precision
-        
-        const tempEl = document.querySelector("#current-temp-rise span");
-        if (tempEl) tempEl.innerHTML = outputHTML;
 
-        const dateEl = document.querySelector("#date-count");
-        if (dateEl) dateEl.innerHTML = now.toGMTString();
+        // 1. Temperature Warming (GWI)
+        if (gwiData) {
+            const warmingInfo = gwiData.anthropogenic_warming['50'];
+            const val = calculateCurrentValue(
+                gwiData.basis_datetime_utc, 
+                warmingInfo.level, 
+                warmingInfo.rate_per_sec
+            );
+            
+            let outputHTML = (val >= 0) ? "+" : "-";
+            outputHTML += Math.abs(val).toFixed(9);
+            
+            const tempEl = document.querySelector("#current-temp-rise span");
+            if (tempEl) tempEl.innerHTML = outputHTML;
 
-        // --- Unknown Metric 2: NonCO2 RF (Legacy Data) ---
-        // We calculate t based on the OLD basis date to preserve continuity 
-        // until we get new data/formulas for these metrics.
-        const t_old = (now - OLD_BASIS_DATE) / 1000; 
+            const dateEl = document.querySelector("#date-count");
+            if (dateEl) dateEl.innerHTML = now.toGMTString();
+        }
 
-        // Non-CO2 Radiative Forcing
-        const currentNonCO2 = calculateNonCO2_RF(t_old);
-        let rfHTML = (currentNonCO2 >= 0) ? "+" : "-";
-        rfHTML += currentNonCO2.toFixed(9);
-        
-        const rfEl = document.querySelector("#current-nonCO2_RF span");
-        if (rfEl) rfEl.innerHTML = rfHTML;
+        // 2. Non-CO2 ERF
+        if (erfData) {
+            const val = calculateCurrentValue(
+                erfData.basis_date,
+                erfData.non_co2_erf_level,
+                erfData.non_co2_erf_rate_per_sec
+            );
 
-        // --- Carbon Emissions (Legacy Data) ---
-        const emissions = calculateCarbonEmissions(t_old) / billion;
-        const emissionsEl = document.querySelector("#current-carbon-emissions span");
-        if (emissionsEl) emissionsEl.innerHTML = (emissions / 1000).toFixed(9);
+            let outputHTML = (val >= 0) ? "+" : "-";
+            outputHTML += Math.abs(val).toFixed(9);
 
-        // GtC (Gigatonnes Carbon)
-        
-        const emissions_val = calculateCarbonEmissions(t_old); // Total quantity
-        const emissions_gtc = emissions_val / billion; // in billions
-        
-        // Format logic from old app.min.js:
-        // (current.emissions_gtc*config.billion*12/44).round(0)...
-        const gtc_value = (emissions_gtc * billion * 12 / 44);
-        
-        const gtcEl = document.querySelector("#current-carbon-emissions_gtc span");
-        if (gtcEl) {
-            // Formatting with commas
-            gtcEl.innerHTML = Math.round(gtc_value).toLocaleString('en-US');
+            const erfEl = document.querySelector("#current-nonCO2_RF span");
+            if (erfEl) erfEl.innerHTML = outputHTML;
+        }
+
+        // 3. CO2 Emissions
+        if (co2Data) {
+            // Raw value in Tonnes CO2
+            const tonnesCO2 = calculateCurrentValue(
+                co2Data.basis_date,
+                co2Data.co2_emissions_level_tonnes,
+                co2Data.co2_emissions_rate_per_sec_tonnes
+            );
+
+            // A) Trillion Tonnes
+            const trillionTonnes = tonnesCO2 / 1.0e12;
+            const co2El = document.querySelector("#current-carbon-emissions span");
+            if (co2El) co2El.innerHTML = trillionTonnes.toFixed(9);
+
+            // B) Equivalent Tonnes of Carbon (Total, not GtC despite ID)
+            // Conversion: C = CO2 * (12 / 44)
+            const tonnesCarbon = tonnesCO2 * (12.0 / 44.0);
+            
+            const carbonEl = document.querySelector("#current-carbon-emissions_gtc span");
+            if (carbonEl) {
+                carbonEl.innerHTML = Math.round(tonnesCarbon).toLocaleString('en-US');
+            }
         }
     }
 

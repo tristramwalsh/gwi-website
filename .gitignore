@@ -12,6 +12,6 @@ __pycache__/
 # Build artifacts
 gwi.tar
 
-# Generated data (built from public/assets/data/source/*)
+# Generated data (built from public/assets/data/gwi/*)
 public/assets/data/current_climate_state.json
 

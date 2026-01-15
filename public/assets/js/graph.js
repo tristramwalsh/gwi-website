@@ -2,8 +2,8 @@
     function init() {
          // Initialize Graph (Logic adapted from new_graph.js)
         Promise.all([
-            fetch('assets/data/source/gwi_timeseries.csv').then(response => response.text()),
-            fetch('assets/data/source/HadCRUT.5.0.2.0.analysis.ensemble_series.global.annual.csv').then(response => response.text())
+            fetch('assets/data/gwi/gwi_timeseries.csv').then(response => response.text()),
+            fetch('assets/data/temp/HadCRUT.5.0.2.0.analysis.ensemble_series.global.annual.csv').then(response => response.text())
         ]).then(([gwiText, hadcrutText]) => {
             const gwiData = parseGwiData(gwiText);
             const hadcrutData = parseHadcrutData(hadcrutText);
