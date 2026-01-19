@@ -9,9 +9,9 @@
   --color-accent-grey: #a8a5a5;
   --color-black: #000;
   --color-white: #fff;
-  
+
   --font-base: Verdana, Helvetica, Arial, sans-serif;
-  --font-mono: 'Droid Sans Mono', 'Courier New', Courier, monospace;
+  --font-mono: "Droid Sans Mono", "Courier New", Courier, monospace;
 }
 
 /* Reset & Base Styles */
@@ -19,22 +19,27 @@
   box-sizing: border-box;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+html {
   background: var(--color-bg);
-  font-family: var(--font-base);
-  color: var(--color-text);
-  line-height: 1.6;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: var(--font-base);
+  color: var(--color-text);
+  line-height: 1.6;
   text-align: center; /* Keeping center alignment as per original design preference */
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 1.5rem 0 1rem;
   font-weight: 700;
   line-height: 1.2;
@@ -70,11 +75,13 @@ a:hover {
 }
 
 /* Layout */
-.container {
+header,
+main,
+footer {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 1rem; /* Add side padding for mobile */
+  padding: 0 1rem;
 }
 
 .visually-hidden {
@@ -140,14 +147,13 @@ header {
   padding: 1.5rem;
   margin: 2rem 0;
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .paper .chart-area {
-    width: 100%;
-    height: 500px;
+  width: 100%;
+  height: 500px;
 }
-
 
 .text-center {
   text-align: center;
@@ -159,12 +165,24 @@ header {
   margin: 1rem 0;
 }
 
-.text-blue { color: var(--color-accent-blue); }
-.text-orange { color: var(--color-accent-orange); }
-.text-purple { color: var(--color-accent-purple); }
-.text-red { color: var(--color-accent-red); }
-.text-grey { color: var(--color-accent-grey); }
-.text-dark-grey { color: #333; }
+.text-blue {
+  color: var(--color-accent-blue);
+}
+.text-orange {
+  color: var(--color-accent-orange);
+}
+.text-purple {
+  color: var(--color-accent-purple);
+}
+.text-red {
+  color: var(--color-accent-red);
+}
+.text-grey {
+  color: var(--color-accent-grey);
+}
+.text-dark-grey {
+  color: #333;
+}
 
 .references {
   font-size: 0.9rem;
@@ -173,11 +191,27 @@ header {
 }
 
 .authors-list {
+  list-style: none;
+  padding: 0;
   margin: 1.5rem 0;
 }
 
-.authors-list p {
+.authors-list li {
   margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.biblio-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.biblio-list li {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: left;
 }
 
 .back-link {
@@ -209,36 +243,74 @@ img {
 
 /* SVG Chart Overrides */
 svg {
-  overflow: visible; 
+  overflow: visible;
 }
-
 
 /* Media Queries */
 @media (max-width: 768px) {
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.25rem; }
-  
+  h1 {
+    font-size: 1.75rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+  }
+
   .stat-box {
     display: block;
     width: 100%;
     margin: 1rem 0;
     font-size: 1rem;
   }
-  
+
   .stat-box.primary {
     font-size: 1.5rem;
   }
-  
+
   .paper {
     padding: 1rem;
   }
-  
+
   .paper .chart-area {
-      height: 350px !important; /* Force smaller height on mobile */
+    height: 350px !important; /* Force smaller height on mobile */
   }
 }
 
 /* Timeline Styles */
+.timeline-wrapper {
+  width: 80%;
+  margin: 20px auto;
+  position: relative;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-line-bg {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: black;
+  opacity: 0.3;
+  z-index: 0;
+  transform: translateY(-50%);
+}
+
+.timeline-line-progress {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: black;
+  opacity: 1;
+  z-index: 0;
+  transform: translateY(-50%);
+  transition: width 0.3s ease;
+}
+
 .timeline-step {
   width: 30px;
   height: 30px;
@@ -257,4 +329,55 @@ svg {
 
 .timeline-step.active {
   background: rgba(0, 0, 0, 1);
+}
+
+/* Animation Styles */
+.animation-container {
+  position: relative;
+  height: 650px;
+  width: 100%;
+}
+
+.rmse-indicator {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #808080;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.rmse-label {
+  font-size: 14px;
+  font-weight: normal;
+  color: #808080;
+  margin-bottom: 5px;
+}
+
+.chart-annotation {
+  min-height: 45px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.button-group {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.button-group button {
+  margin: 0 5px;
+}
+
+@media (max-width: 768px) {
+  .animation-container {
+    height: 400px;
+  }
 }

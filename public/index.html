@@ -1,186 +1,216 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>globalwarmingindex.org -- Tracking progress to a safe climate</title>
-    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet" />
     <!-- MathJax -->
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
-<body>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
 
-    <div class="container">
-        <header>
-            <h1 class="visually-hidden">globalwarmingindex.org</h1>
-            <a href="index.html">
-                <img src="assets/img/globalwarmingindex.png" alt="Global Warming Index - Tracking progress to a safe climate" class="branding">
-            </a>
-            <!-- Strapline is visually in the image, so we hide this or rely on alt text -->
-        </header>
+  <body>
+    <header>
+      <h1 class="visually-hidden">globalwarmingindex.org</h1>
+      <a href="index.html">
+        <img
+          src="assets/img/globalwarmingindex.png"
+          alt="Global Warming Index - Tracking progress to a safe climate"
+          class="branding"
+        />
+      </a>
+      <!-- Strapline is visually in the image, so we hide this or rely on alt text -->
+    </header>
 
-        <main>
-            <div id="current-temp-rise" class="stat-box primary">
-                Human-induced warming: <span>----------------</span> &deg;C
-            </div>
+    <main>
+      <div id="current-temp-rise" class="stat-box primary">
+        Human-induced warming: <span>----------------</span> &deg;C
+      </div>
 
-            <p class="date-display text-center">on <span id="date-count">now</span></p>
+      <p class="date-display text-center">
+        on <span id="date-count">now</span>
+      </p>
 
-            <div class="text-justify">
-                <p>
-                    This number shows an up-to-the-second assessment of human-induced global warming since the second
-                    half of the 19<sup>th</sup> century.
-                    In the 2015 Paris Agreement countries around the world agreed to work towards keeping global warming
-                    below 2 degrees – and ideally at 1.5 degrees – in order to avoid the worst impacts of climate
-                    change.
-                </p>
-            </div>
+      <p>
+        This number shows an up-to-the-second assessment of human-induced global
+        warming since the second half of the 19<sup>th</sup> century. In the
+        2015 Paris Agreement countries around the world agreed to work towards
+        keeping global warming below 2 degrees – and ideally at 1.5 degrees – in
+        order to avoid the worst impacts of climate change.
+      </p>
 
-            <div class="paper">
-                <div id="climate-chart" class="chart-area"></div>
-                <p class="text-center">This graph shows how global temperatures have risen over the past 170 years, using attribution
-                    science to understand the causes of this change and smooth out natural fluctuations.</p>
-            </div>
+      <div class="paper">
+        <div id="climate-chart" class="chart-area"></div>
+        <p class="text-center">
+          This graph shows how global temperatures have risen over the past 170
+          years, using attribution science to understand the causes of this
+          change and smooth out natural fluctuations.
+        </p>
+      </div>
 
-            <div class="text-justify">
-                <p>
-                    The black line shows real-world observations of global mean temperature. Although there is some
-                    year-to-year variation, the Earth’s temperature has been steadily increasing since the
-                    1960s.
-                </p>
-                <p>
-                    This cannot be explained by natural causes. The <span class="text-blue">blue line</span> shows the
-                    estimated contribution to Earth’s temperature change from natural causes, such as changes in solar
-                    activity and volcanic eruptions. These account for some of the variation in global temperatures, but
-                    they can’t explain the overall warming.
-                </p>
-                <p>
-                    The <span class="text-red">red line</span> shows the estimated contribution from human-induced
-                    global warming, caused by the burning of fossil fuels or other forms of pollution. Since this line
-                    closely follows the temperatures observed in the real world, it shows that the overall warming can
-                    largely be attributed to human activity. However, it is still not an exact match.
-                </p>
-                <p>
-                    The <span class="text-purple">purple line</span> shows the combined impacts of human-induced and natural
-                    changes. This line most closely matches the observed temperatures, and shows that human-induced
-                    changes, plus some natural forcing, has caused the global warming we see today.
-                </p>
-                <p>
-                    <a href="https://www.youtube.com/watch?v=luCN7mFuWLY">Find out more</a> about attribution science in
-                    this video from Dr Friederike Otto, one of the pioneers of attribution science.
-                </p>
-            </div>
+      <p>
+        The black line shows real-world observations of global mean temperature.
+        Although there is some year-to-year variation, the Earth’s temperature
+        has been steadily increasing since the 1960s.
+      </p>
+      <p>
+        This cannot be explained by natural causes. The
+        <span class="text-blue">blue line</span> shows the estimated
+        contribution to Earth’s temperature change from natural causes, such as
+        changes in solar activity and volcanic eruptions. These account for some
+        of the variation in global temperatures, but they can’t explain the
+        overall warming.
+      </p>
+      <p>
+        The <span class="text-red">red line</span> shows the estimated
+        contribution from human-induced global warming, caused by the burning of
+        fossil fuels or other forms of pollution. Since this line closely
+        follows the temperatures observed in the real world, it shows that the
+        overall warming can largely be attributed to human activity. However, it
+        is still not an exact match.
+      </p>
+      <p>
+        The <span class="text-purple">purple line</span> shows the combined
+        impacts of human-induced and natural changes. This line most closely
+        matches the observed temperatures, and shows that human-induced changes,
+        plus some natural forcing, has caused the global warming we see today.
+      </p>
+      <p>
+        <a href="https://www.youtube.com/watch?v=luCN7mFuWLY">Find out more</a>
+        about attribution science in this video from Dr Friederike Otto, one of
+        the pioneers of attribution science.
+      </p>
 
-            <h3>What contributes to human-induced global warming?</h3>
+      <h3>What contributes to human-induced global warming?</h3>
 
-            <div id="current-carbon-emissions" class="stat-box black">
-                Total Carbon Dioxide emissions: <span>----------------</span> trillion tonnes
-            </div>
+      <div id="current-carbon-emissions" class="stat-box black">
+        Total Carbon Dioxide emissions: <span>----------------</span> trillion
+        tonnes
+      </div>
 
-            <div id="current-carbon-emissions_gtc" class="stat-box black">
-                (Equivalent tonnes of Carbon: <span>----------------</span> tonnes)
-            </div>
+      <div id="current-carbon-emissions_gtc" class="stat-box black">
+        (Equivalent tonnes of Carbon: <span>----------------</span> tonnes)
+      </div>
 
-            <div class="text-justify">
-                <p>
-                    This number shows an up-to-the second assessment of total global carbon dioxide emissions
-                    (CO<sub>2</sub>). CO<sub>2</sub> emissions are the biggest contributor to human-induced climate
-                    change.
-                </p>
-            </div>
+      <p>
+        This number shows an up-to-the second assessment of total global carbon
+        dioxide emissions (CO<sub>2</sub>). CO<sub>2</sub> emissions are the
+        biggest contributor to human-induced climate change.
+      </p>
 
-            <div class="paper">
-                <div id="forcings-chart" class="chart-area"></div>
-                <p class="text-center">This graph shows how the main drivers are contributing to human-induced global warming.<br>
-                    The dark grey shows CO<sub>2</sub> emissions added up over time.</p>
-            </div>
+      <div class="paper">
+        <div id="forcings-chart" class="chart-area"></div>
+        <p class="text-center">
+          This graph shows how the main drivers are contributing to
+          human-induced global warming.<br />
+          The dark grey shows CO<sub>2</sub> emissions added up over time.
+        </p>
+      </div>
 
-            <div class="text-justify">
-                <p>
-                    CO<sub>2</sub> emissions account for the majority of global warming.
-                </p>
-                <p> 
-                    In the 2015 Paris Agreement countries around the world agreed to work towards achieving ‘net zero’
-                    carbon dioxide emissions. First and foremost, this means reducing CO<sub>2</sub> emissions.
-                    In order to meet climate targets, it will also be necessary to remove some CO<sub>2</sub> from the
-                    atmosphere. This could be done by through biological pathways such as forest restoration, or through
-                    technologies such as carbon capture and storage.
-                </p>
-            </div>
+      <p>
+        CO<sub>2</sub> emissions account for the majority of global warming.
+      </p>
+      <p>
+        In the 2015 Paris Agreement countries around the world agreed to work
+        towards achieving ‘net zero’ carbon dioxide emissions. First and
+        foremost, this means reducing CO<sub>2</sub> emissions. In order to meet
+        climate targets, it will also be necessary to remove some CO<sub>2</sub>
+        from the atmosphere. This could be done by through biological pathways
+        such as forest restoration, or through technologies such as carbon
+        capture and storage.
+      </p>
 
-            <h3>What else contributes to human-induced global warming?</h3>
+      <h3>What else contributes to human-induced global warming?</h3>
 
-            <div id="current-nonCO2_RF" class="stat-box">
-                Other Human influences on climate: <span>----------------</span> Watts per square metre
-            </div>
+      <div id="current-nonCO2_RF" class="stat-box">
+        Other Human influences on climate: <span>----------------</span> Watts
+        per square metre
+      </div>
 
-            <div class="text-justify">
-                <p>
-                    This number shows an up-to-the second estimate of other human influences on climate.
-                    These changes cause an additional amount of heat energy to be trapped in the climate system,
-                    contributing to global warming, measured in W/m<sup>2</sup>.
-                </p>
-            </div>
+      <p>
+        This number shows an up-to-the second estimate of other human influences
+        on climate. These changes cause an additional amount of heat energy to
+        be trapped in the climate system, contributing to global warming,
+        measured in W/m<sup>2</sup>.
+      </p>
 
-            <h3>How do CO<sub>2</sub> emissions and other climate drivers contribute to global warming?</h3>
+      <h3>
+        How do CO<sub>2</sub> emissions and other climate drivers contribute to
+        global warming?
+      </h3>
 
-            <div class="text-justify">
-                <p>
-                    In the second figure above, the total human-induced global warming (<span class="text-red">red line</span>) estimated from observed temperatures is given almost exactly by simply adding the warming
-                    caused by CO<sub>2</sub> emissions (<span class="text-black">dark grey</span>) to the warming caused by
-                    other human activities (<span class="text-grey">light grey</span>): all lines of evidence agree on what
-                    is driving global temperature change.
-                </p>
-                <p>
-                    Human-induced warming (<span class="text-red"><em>&Delta;T</em></span>) over a time-interval ranging from
-                    seconds to decades is proportional to total cumulative carbon dioxide emissions over that
-                    time-interval (<i>E</i>) plus the impact of any change in global energy imbalance due to other human
-                    influences on climate (<span class="text-grey"><em>&Delta;F</em></span>).
-                </p>
-                <p>
-                    We can write this as an equation [1]:
-                </p>
+      <p>
+        In the second figure above, the total human-induced global warming
+        (<span class="text-red">red line</span>) estimated from observed
+        temperatures is given almost exactly by simply adding the warming caused
+        by CO<sub>2</sub> emissions (<span class="text-black">dark grey</span>)
+        to the warming caused by other human activities (<span class="text-grey"
+          >light grey</span
+        >): all lines of evidence agree on what is driving global temperature
+        change.
+      </p>
+      <p>
+        Human-induced warming (<span class="text-red"><em>&Delta;T</em></span
+        >) over a time-interval ranging from seconds to decades is proportional
+        to total cumulative carbon dioxide emissions over that time-interval
+        (<i>E</i>) plus the impact of any change in global energy imbalance due
+        to other human influences on climate (<span class="text-grey"
+          ><em>&Delta;F</em></span
+        >).
+      </p>
+      <p>We can write this as an equation [1]:</p>
 
-                <div class="equation-container">
-                    \[ {\color{red} {\Delta T}} = {\color{blue}\kappa} \cdot \left( E + \frac{{\color{grey} {\Delta F}}}{{\color{blue}\alpha}} \right) \]
-                </div>
+      <div class="equation-container">
+        \[ {\color{red} {\Delta T}} = {\color{blue}\kappa} \cdot \left( E +
+        \frac{{\color{grey} {\Delta F}}}{{\color{blue}\alpha}} \right) \]
+      </div>
 
-                <p>
-                    where <span class="text-blue"><i>&kappa;</i></span> is the “Transient Climate Response to Emissions”
-                    (about 0.4°C per trillion tonnes of CO<sub>2</sub> [2]) and <span class="text-blue"><i>&alpha;</i></span>
-                    is the “Normalised Absolute Global Warming Potential” of CO<sub>2</sub> (about 1.0 W/m<sup>2</sup>
-                    per trillion tonnes of CO<sub>2</sub> [3]).
-                </p>
+      <p>
+        where <span class="text-blue"><i>&kappa;</i></span> is the “Transient
+        Climate Response to Emissions” (about 0.4°C per trillion tonnes of
+        CO<sub>2</sub> [2]) and <span class="text-blue"><i>&alpha;</i></span> is
+        the “Normalised Absolute Global Warming Potential” of CO<sub>2</sub>
+        (about 1.0 W/m<sup>2</sup> per trillion tonnes of CO<sub>2</sub>
+        [3]).
+      </p>
 
-                <p>
-                    <strong>The Global Warming Index is run by researchers from the <a href="https://www.eci.ox.ac.uk/research/climate/index.html">Environmental Change Institute</a> at the University of Oxford.</strong>
-                </p>
+      <p>
+        <strong
+          >The Global Warming Index is run by researchers from the
+          <a href="https://www.eci.ox.ac.uk/research/climate/index.html"
+            >Environmental Change Institute</a
+          >
+          at the University of Oxford.</strong
+        >
+      </p>
 
-                <div class="references">
-                    <p>
-                        [1] Allen et al, <i>npj Clim Atmos Sci</i> <b>1</b>, 16 (2018)<br>
-                        [2] Myhre et al (2013) in IPCC 5th Assessment Report, incl. uncertainty range of 0.23-0.68°C/TtCO<sub>2.</sub><br>
-                        [3] <span class="text-blue"><i>&alpha;</i></span> = AGWP<sub>CO<sub>2</sub></sub>/<i>H</i>, where
-                        <i>H</i> is the AGWP time-horizon. Myhre et al (2013) give values of 0.9-1.2 W/m<sup>2</sup> per
-                        trillion tonnes of CO<sub>2</sub> in the 20-100 yr range.
-                    </p>
-                </div>
-            </div>
+      <div class="references">
+        <p>
+          [1] Allen et al, <i>npj Clim Atmos Sci</i> <b>1</b>, 16 (2018)<br />
+          [2] Myhre et al (2013) in IPCC 5th Assessment Report, incl.
+          uncertainty range of 0.23-0.68°C/TtCO<sub>2.</sub><br />
+          [3] <span class="text-blue"><i>&alpha;</i></span> = AGWP<sub
+            >CO<sub>2</sub></sub
+          >/<i>H</i>, where <i>H</i> is the AGWP time-horizon. Myhre et al
+          (2013) give values of 0.9-1.2 W/m<sup>2</sup> per trillion tonnes of
+          CO<sub>2</sub> in the 20-100 yr range.
+        </p>
+      </div>
+    </main>
 
-        </main>
-
-        <footer>
-            <p>Source: IPCC (2013)</p>
-            <p>Design: Christopher Leedham &amp; Myles Allen</p>
-        </footer>
-
-    </div>
+    <footer>
+      <p>Source: IPCC (2013)</p>
+      <p>Design: Christopher Leedham &amp; Myles Allen</p>
+    </footer>
 
     <!-- Scripts -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="assets/js/counters.js"></script>
     <script src="assets/js/graph.js"></script>
     <script src="assets/js/forcings_graph.js"></script>
-
-</body>
+  </body>
 </html>
