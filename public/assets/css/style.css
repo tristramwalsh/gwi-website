@@ -4,6 +4,7 @@
   --color-text-muted: #555;
   --color-accent-blue: blue;
   --color-accent-orange: orange;
+  --color-accent-purple: purple;
   --color-accent-red: #ab180e;
   --color-accent-grey: #a8a5a5;
   --color-black: #000;
@@ -160,6 +161,7 @@ header {
 
 .text-blue { color: var(--color-accent-blue); }
 .text-orange { color: var(--color-accent-orange); }
+.text-purple { color: var(--color-accent-purple); }
 .text-red { color: var(--color-accent-red); }
 .text-grey { color: var(--color-accent-grey); }
 .text-dark-grey { color: #333; }

@@ -165,7 +165,7 @@
 
     function plotGraph(data) {
         // Calculate Scaling Factor
-        // We want the end of the Orange Line (Ant) to align with the Top of the Stack (CO2 + Other)
+        // We want the end of the Red Line (Ant) to align with the Top of the Stack (CO2 + Other)
         // at the rightmost point (latest year).
         // AND we want the y=0 lines to align.
         // This implies a strict proportional scaling: Range2 = Range1 * (Top2 / Top1)
@@ -249,14 +249,14 @@
             }
         };
 
-        // 4. Human-induced Warming (Ant50, Orange Line)
+        // 4. Human-induced Warming (Ant50, Red Line)
         const traceAnt = {
             x: data.years,
             y: data.ant,
             name: 'Human-induced warming',
             type: 'scatter',
             mode: 'lines',
-            line: { color: 'orange', width: 3 }
+            line: { color: 'red', width: 3 }
         };
 
         const layout = {

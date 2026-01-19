@@ -137,8 +137,8 @@
 
         // Colors matching the description
         const colorNat = 'rgb(0, 0, 255)'; // Blue
-        const colorAnt = 'rgb(255, 165, 0)'; // Orange
-        const colorTot = 'rgb(255, 0, 0)'; // Red
+        const colorAnt = 'rgb(255, 0, 0)'; // Red
+        const colorTot = 'rgb(128, 0, 128)'; // Purple
 
         createTraces('Natural', colorNat, gwiData.nat);
         createTraces('Human-induced', colorAnt, gwiData.ant);

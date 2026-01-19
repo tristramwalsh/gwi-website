@@ -29,10 +29,10 @@
 
     const COLORS = {
         GHG: 'rgb(0, 128, 0)',   // Green
-        OHF: 'rgb(128, 0, 128)', // Purple
-        Ant: 'rgb(255, 165, 0)', // Orange
+        OHF: 'rgb(255, 165, 0)', // Orange
+        Ant: 'rgb(255, 0, 0)',   // Red
         Nat: 'rgb(0, 0, 255)',   // Blue
-        Tot: 'rgb(255, 0, 0)',   // Red
+        Tot: 'rgb(128, 0, 128)', // Purple
         Res: 'rgb(128, 128, 128)', // Grey
         HadCRUT: 'black'
     };
@@ -59,7 +59,7 @@
         "We start with the Greenhouse Gas (GHG), Other Human Forcing (OHF), and Natural (Nat) forcing estimates (W/m²),<br>including uncertainty ranges. Together, these account for all of the forcing acting on the climate system.",
         "We feed these forcings through a climate response model to convert them into initial warming estimates (Prior Warming).<br>These have a wide uncertainty range as this first calculation is designed to capture the full range of possible outcomes under scientific uncertainty.",
         "We calculate Human-induced warming as the sum of warming from Greenhouse Gases and Other Human Forcings,<br>and Total forced warming by combining Naturally forced warming with Human-induced warming.",
-        "We compare the Total forced warming estimate (red) with the Observations of the real world (black).<br>This shows that our Prior estimate is broadly consistent with the real world, but is not optimally precise or accurate, as we haven't yet included information from these observations into the assessment.",
+        "We compare the Total forced warming estimate (purple) with the Observations of the real world (black).<br>This shows that our Prior estimate is broadly consistent with the real world, but is not optimally precise or accurate, as we haven't yet included information from these observations into the assessment.",
         "We use the Observations as additional information to constrain our modelled warming, tightening the uncertainty ranges, and improving the accuracy. This process adjusts the warming estimates for all components in order to find the mathematically optimal fit between modelled and real-world warming.<br>Note: Observed warming is the sum of a 'signal' (Total forced warming) and 'noise' (called internal variability - this is the reason for the Residual component).",
         "Finally, the Global Warming Index is defined as just the human-induced warming component. Note that the other warming components calculated in the GWI method are also scientifically important and are used in global climate assessmnets, but the GWI itself specifically refers to the human-induced warming component. The uncertainty range incorporates uncertainties from (i) radiative forcings, (ii) climate response, (iii) observed warming, (iv) alternative possible realisations of internal variability; the shaded ranges are the 5-95th percentiles across a large ensemble of hundreds of millions of samplings across these sources of uncertainty."
     ];
