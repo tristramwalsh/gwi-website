@@ -235,3 +235,24 @@ svg {
       height: 350px !important; /* Force smaller height on mobile */
   }
 }
+
+/* Timeline Styles */
+.timeline-step {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 1;
+  transition: background 0.3s ease;
+  position: relative;
+  font-size: 14px;
+}
+
+.timeline-step.active {
+  background: rgba(0, 0, 0, 1);
+}

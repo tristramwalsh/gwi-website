@@ -48,7 +48,33 @@
                 </p>
 
                 <div class="text-center">
-                    <img src="assets/img/AWI_AR5_new_anim.gif" alt="Animation of GWI methodology">
+                    <div id="gwi-animation-container" style="position: relative; height: 650px; width: 100%;">
+                        <canvas id="gwi-chart"></canvas>
+                        <div id="rmse-indicator" style="position: absolute; top: 100px; left: 50%; transform: translateX(-50%); text-align: center; font-weight: bold; font-size: 18px; color: #808080; opacity: 0; transition: opacity 0.5s ease; pointer-events: none;">
+                            <div style="font-size: 14px; font-weight: normal; color: #808080; margin-bottom: 5px;">Difference between forced warming and observed warming</div>
+                            <span id="rmse-value">0.0000</span> K
+                        </div>
+                    </div>
+                    <div id="chart-annotation" style="min-height: 45px; margin-top: 15px; margin-bottom: 15px; font-size: 14px; color: #666;"></div>
+
+                    <!-- Timeline -->
+                    <div class="timeline-wrapper" style="width: 80%; margin: 20px auto; position: relative; height: 30px; display: flex; align-items: center; justify-content: space-between;">
+                        <div class="timeline-line-bg" style="position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: black; opacity: 0.3; z-index: 0; transform: translateY(-50%);"></div>
+                        <div id="timeline-progress" class="timeline-line-progress" style="position: absolute; top: 50%; left: 0; width: 0%; height: 2px; background: black; opacity: 1; z-index: 0; transform: translateY(-50%); transition: width 0.3s ease;"></div>
+                        
+                        <div class="timeline-step" data-index="0">1</div>
+                        <div class="timeline-step" data-index="1">2</div>
+                        <div class="timeline-step" data-index="2">3</div>
+                        <div class="timeline-step" data-index="3">4</div>
+                        <div class="timeline-step" data-index="4">5</div>
+                        <div class="timeline-step" data-index="5">6</div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="btn-prev" class="btn btn-secondary btn-sm" style="margin-right: 5px;">Previous</button>
+                        <button id="btn-play-pause" class="btn btn-secondary btn-sm" style="margin-right: 5px;">Pause</button>
+                        <button id="btn-next" class="btn btn-secondary btn-sm">Next</button>
+                    </div>
                     <p><small><em>Animation of the main steps needed to estimate the Global Warming Index. The first and second step shows observations and natural
                         and anthropogenic foring estimates (W/m2), including 200 different realisations that comprise the full forcing uncertainty. The third step is the
                         application of the response model which converts forcing in a fast and slow temperature equivalent as a function of the best estimate for TCR, ECS
@@ -116,5 +142,7 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/animation.js"></script>
 </body>
 </html>
