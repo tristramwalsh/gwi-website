@@ -10,6 +10,29 @@
   --color-black: #000;
   --color-white: #fff;
 
+  /* Plot Colors */
+  --color-plot-natural: rgb(58, 110, 165);
+
+  --color-plot-anthropogenic: rgb(178, 34, 34);
+
+  --color-plot-total: rgb(105, 47, 130);
+
+  --color-plot-ghg: rgb(47, 128, 124);
+
+  --color-plot-ohf: rgb(166, 212, 142);
+
+  --color-plot-non-co2: rgb(212, 131, 104);
+  --color-plot-non-co2-neg: rgb(104, 194, 212);
+
+  --color-plot-co2: rgb(59, 54, 54);
+
+  --color-plot-observations: rgb(61, 61, 61);
+  --color-plot-obs-err: rgba(61, 61, 61, 0.4);
+
+  --color-plot-residual: rgb(128, 128, 128);
+
+  --color-plot-anthro-forcing: rgb(178, 34, 34);
+
   --font-base: Verdana, Helvetica, Arial, sans-serif;
   --font-mono: "Droid Sans Mono", "Courier New", Courier, monospace;
 }
@@ -122,7 +145,7 @@ header {
 }
 
 .stat-box.primary {
-  background: var(--color-accent-red);
+  background: var(--color-plot-anthropogenic);
   font-size: 2rem;
 }
 
@@ -165,6 +188,33 @@ header {
   margin: 1rem 0;
 }
 
+/* Semantic Text Colors */
+.text-natural {
+  color: var(--color-plot-natural);
+}
+.text-anthropogenic {
+  color: var(--color-plot-anthropogenic);
+}
+.text-total {
+  color: var(--color-plot-total);
+}
+.text-ghg {
+  color: var(--color-plot-ghg);
+}
+.text-ohf {
+  color: var(--color-plot-ohf);
+}
+.text-co2 {
+  color: var(--color-plot-co2);
+}
+.text-obs {
+  color: var(--color-plot-observations);
+}
+.text-residual {
+  color: var(--color-plot-residual);
+}
+
+/* Legacy Utility Classes (Deprecated) */
 .text-blue {
   color: var(--color-accent-blue);
 }
@@ -340,12 +390,12 @@ svg {
 
 .rmse-indicator {
   position: absolute;
-  top: 100px;
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
   font-weight: bold;
-  font-size: 18px;
+  font-size: clamp(16px, 2.5vw, 20px);
   color: #808080;
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -353,10 +403,10 @@ svg {
 }
 
 .rmse-label {
-  font-size: 14px;
+  font-size: clamp(12px, 1.8vw, 16px);
   font-weight: normal;
   color: #808080;
-  margin-bottom: 5px;
+  margin-bottom: 0.3em;
 }
 
 .chart-annotation {

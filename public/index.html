@@ -44,7 +44,9 @@
       </p>
 
       <div class="paper">
-        <div id="climate-chart" class="chart-area"></div>
+        <div class="chart-area">
+          <canvas id="climate-chart"></canvas>
+        </div>
         <p class="text-center">
           This graph shows how global temperatures have risen over the past 170
           years, using attribution science to understand the causes of this
@@ -53,28 +55,30 @@
       </div>
 
       <p>
-        The black line shows real-world observations of global mean temperature.
-        Although there is some year-to-year variation, the Earth’s temperature
-        has been steadily increasing since the 1960s.
+        The <span class="text-obs">Observations</span> show real-world
+        observations of global mean temperature. Although there is some
+        year-to-year variation, the Earth’s temperature has been steadily
+        increasing since the 1960s. This cannot be explained by natural causes.
       </p>
       <p>
-        This cannot be explained by natural causes. The
-        <span class="text-blue">blue line</span> shows the estimated
-        contribution to Earth’s temperature change from natural causes, such as
-        changes in solar activity and volcanic eruptions. These account for some
-        of the variation in global temperatures, but they can’t explain the
-        overall warming.
+        The
+        <span class="text-natural">Natural Contribution</span> shows the
+        estimated contribution to Earth’s temperature change from natural
+        causes, such as changes in solar activity and volcanic eruptions. These
+        account for some of the variation in global temperatures, but they can’t
+        explain the overall warming.
       </p>
       <p>
-        The <span class="text-red">red line</span> shows the estimated
-        contribution from human-induced global warming, caused by the burning of
-        fossil fuels or other forms of pollution. Since this line closely
-        follows the temperatures observed in the real world, it shows that the
-        overall warming can largely be attributed to human activity. However, it
-        is still not an exact match.
+        The
+        <span class="text-anthropogenic">Human-Induced Contribution</span> shows
+        the estimated contribution from human-induced global warming, caused by
+        the burning of fossil fuels or other forms of pollution. Since this line
+        closely follows the temperatures observed in the real world, it shows
+        that the overall warming can largely be attributed to human activity.
+        However, it is still not an exact match.
       </p>
       <p>
-        The <span class="text-purple">purple line</span> shows the combined
+        The <span class="text-total">Combined Response</span> shows the combined
         impacts of human-induced and natural changes. This line most closely
         matches the observed temperatures, and shows that human-induced changes,
         plus some natural forcing, has caused the global warming we see today.
@@ -103,11 +107,14 @@
       </p>
 
       <div class="paper">
-        <div id="forcings-chart" class="chart-area"></div>
+        <div class="chart-area">
+          <canvas id="forcings-chart"></canvas>
+        </div>
         <p class="text-center">
           This graph shows how the main drivers are contributing to
           human-induced global warming.<br />
-          The dark grey shows CO<sub>2</sub> emissions added up over time.
+          The <span class="text-co2">CO<sub>2</sub> Emissions</span> shows
+          CO<sub>2</sub> emissions added up over time.
         </p>
       </div>
 
@@ -145,20 +152,24 @@
 
       <p>
         In the second figure above, the total human-induced global warming
-        (<span class="text-red">red line</span>) estimated from observed
-        temperatures is given almost exactly by simply adding the warming caused
-        by CO<sub>2</sub> emissions (<span class="text-black">dark grey</span>)
-        to the warming caused by other human activities (<span class="text-grey"
-          >light grey</span
+        (<span class="text-anthropogenic">Human-Induced Contribution</span>)
+        estimated from observed temperatures is given almost exactly by simply
+        adding the warming caused by CO<sub>2</sub> emissions (<span
+          class="text-co2"
+          >cumulative emissions</span
+        >) to the warming caused by other human activities (<span
+          class="text-ohf"
+          >Other Human Forcings</span
         >): all lines of evidence agree on what is driving global temperature
         change.
       </p>
       <p>
-        Human-induced warming (<span class="text-red"><em>&Delta;T</em></span
+        Human-induced warming (<span class="text-anthropogenic"
+          ><em>&Delta;T</em></span
         >) over a time-interval ranging from seconds to decades is proportional
         to total cumulative carbon dioxide emissions over that time-interval
         (<i>E</i>) plus the impact of any change in global energy imbalance due
-        to other human influences on climate (<span class="text-grey"
+        to other human influences on climate (<span class="text-ohf"
           ><em>&Delta;F</em></span
         >).
       </p>
@@ -208,7 +219,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/js/counters.js"></script>
     <script src="assets/js/graph.js"></script>
     <script src="assets/js/forcings_graph.js"></script>

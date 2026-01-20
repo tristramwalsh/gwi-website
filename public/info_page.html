@@ -113,9 +113,11 @@
         <a
           href="https://www.esrl.noaa.gov/psd/data/gridded/data.noaaglobaltemp.html"
           >NOAA</a
-        >; <a href="https://data.giss.nasa.gov/gistemp/maps/">NASA</a>; black
-        line) at the end of every month and estimated responses to human-induced
-        and natural drivers of climate change (red and blue lines). The forcing
+        >; <a href="https://data.giss.nasa.gov/gistemp/maps/">NASA</a>;
+        <span class="text-obs">Observations</span>) at the end of every month
+        and estimated responses to human-induced and natural drivers of climate
+        change (<span class="text-anthropogenic">Human-Induced</span> and
+        <span class="text-natural">Natural</span> contributions). The forcing
         responses are provided by the standard simple climate model given in
         <a
           href="https://www.climatechange2013.org/images/report/WG1AR5_Ch08SM_FINAL.pdf"
@@ -132,7 +134,7 @@
           <canvas id="gwi-chart"></canvas>
           <div id="rmse-indicator" class="rmse-indicator">
             <div class="rmse-label">
-              Difference between forced warming and observed warming
+              Average difference between forced warming and observed warming
             </div>
             <span id="rmse-value">0.0000</span> K
           </div>
@@ -173,9 +175,9 @@
               the best estimate for TCR, ECS and the response times. In the
               fourth and fifth step, the sum of the two responses before
               regression with the observed temperature is shown together with
-              the resulting combined temperature response (red). The sixth step
-              is the same response after multiplying it with the slope provided
-              by the the least-square-fit between temperature and
+              the resulting <span class="text-total">Combined Response</span>.
+              The sixth step is the same response after multiplying it with the
+              slope provided by the least-square-fit between temperature and
               natural/anthropogenic response. Finally, the full uncertainty
               range for the natural and the human-induced contributions is
               estimated and added to the graph.

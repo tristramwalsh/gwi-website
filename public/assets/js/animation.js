@@ -3,6 +3,14 @@
   const ctx = document.getElementById("gwi-chart").getContext("2d");
   const annotationDiv = document.getElementById("chart-annotation");
 
+  const withAlpha = (color, alpha) => {
+    const match = (color || "").match(
+      /rgb\s*a?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
+    );
+    if (!match) return color;
+    return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${alpha})`;
+  };
+
   // Buttons
   const btnPrev = document.getElementById("btn-prev");
   const btnPlayPause = document.getElementById("btn-play-pause");
@@ -27,14 +35,16 @@
     rmseCounterInterval: null,
   };
 
+  const style = getComputedStyle(document.documentElement);
   const COLORS = {
-    GHG: "rgb(0, 128, 0)", // Green
-    OHF: "rgb(255, 165, 0)", // Orange
-    Ant: "rgb(255, 0, 0)", // Red
-    Nat: "rgb(0, 0, 255)", // Blue
-    Tot: "rgb(128, 0, 128)", // Purple
-    Res: "rgb(128, 128, 128)", // Grey
-    HadCRUT: "black",
+    GHG: style.getPropertyValue("--color-plot-ghg").trim(),
+    OHF: style.getPropertyValue("--color-plot-ohf").trim(),
+    Ant: style.getPropertyValue("--color-plot-anthropogenic").trim(),
+    Nat: style.getPropertyValue("--color-plot-natural").trim(),
+    Tot: style.getPropertyValue("--color-plot-total").trim(),
+    Res: style.getPropertyValue("--color-plot-residual").trim(),
+    HadCRUT:
+      style.getPropertyValue("--color-plot-observations").trim() || "black",
   };
 
   const AXIS_TITLES = [
@@ -302,10 +312,7 @@
     COMPONENTS.forEach((comp) => {
       const c = COLORS[comp];
       // Remove plume for Tot by making it transparent
-      const cAlpha =
-        comp === "Tot"
-          ? "transparent"
-          : c.replace("rgb", "rgba").replace(")", ", 0.2)");
+      const cAlpha = comp === "Tot" ? "transparent" : withAlpha(c, 0.2);
 
       // Labels
       let label = comp;
@@ -359,9 +366,10 @@
       data: [],
       type: "line",
       showLine: false,
-      borderColor: "black",
-      backgroundColor: "black",
+      borderColor: COLORS.HadCRUT,
+      backgroundColor: COLORS.HadCRUT,
       pointRadius: 2,
+      pointBorderWidth: 0,
       borderWidth: 0,
       order: 0, // Top most
     });
@@ -371,7 +379,7 @@
       label: "Observations Range",
       data: [],
       type: "bar",
-      backgroundColor: "black",
+      backgroundColor: withAlpha(COLORS.HadCRUT, 0.4),
       barThickness: 1,
       grouped: false,
       order: 0,
@@ -427,6 +435,10 @@
           legend: {
             position: "bottom",
             labels: {
+              usePointStyle: true,
+              pointStyle: "rect",
+              boxWidth: 10,
+              boxHeight: 10,
               filter: function (item, data) {
                 // Filter 1: No confidence intervals
                 if (item.text.includes("%")) return false;
@@ -470,6 +482,40 @@
               ctx.moveTo(left, yPos);
               ctx.lineTo(right, yPos);
               ctx.stroke();
+              ctx.restore();
+            }
+          },
+        },
+        {
+          id: "eciLogo",
+          afterDraw: (chart) => {
+            const { ctx, chartArea } = chart;
+            if (!window.eciLogoImage) {
+              // Load the logo if not already loaded
+              window.eciLogoImage = new Image();
+              window.eciLogoImage.src =
+                "assets/img/eci-oxford-blue-text-RGB.png";
+              window.eciLogoImage.onload = () => {
+                chart.update(); // Re-render once logo is loaded
+              };
+            } else if (window.eciLogoImage.complete) {
+              // Draw the logo in the top-left corner of the plot area
+              const chartHeight = chartArea.bottom - chartArea.top;
+              const logoHeight = chartHeight * 0.15; // 8% of chart height
+              const logoWidth =
+                (window.eciLogoImage.width / window.eciLogoImage.height) *
+                logoHeight;
+              const padding = 10;
+
+              ctx.save();
+              ctx.globalAlpha = 0.8; // Slightly transparent
+              ctx.drawImage(
+                window.eciLogoImage,
+                chartArea.left + padding,
+                chartArea.top + padding,
+                logoWidth,
+                logoHeight,
+              );
               ctx.restore();
             }
           },
@@ -597,12 +643,12 @@
       let lineColor = baseColor;
       let plumeColor = !plumeVisible
         ? "transparent"
-        : baseColor.replace("rgb", "rgba").replace(")", ", 0.2)");
+        : withAlpha(baseColor, 0.2);
 
       if (isFaint) {
-        lineColor = baseColor.replace("rgb", "rgba").replace(")", ", 0.1)");
+        lineColor = withAlpha(baseColor, 0.1);
         if (plumeColor !== "transparent") {
-          plumeColor = baseColor.replace("rgb", "rgba").replace(")", ", 0.05)");
+          plumeColor = withAlpha(baseColor, 0.05);
         }
       }
 
