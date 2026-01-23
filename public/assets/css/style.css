@@ -21,10 +21,10 @@
 
   --color-plot-ohf: rgb(166, 212, 142);
 
-  --color-plot-non-co2: rgb(212, 131, 104);
-  --color-plot-non-co2-neg: rgb(104, 194, 212);
+  --color-plot-non-co2: rgb(212, 156, 104);
+  --color-plot-non-co2-neg: rgb(104, 212, 192);
 
-  --color-plot-co2: rgb(59, 54, 54);
+  --color-plot-co2: rgb(106, 68, 79);
 
   --color-plot-observations: rgb(61, 61, 61);
   --color-plot-obs-err: rgba(61, 61, 61, 0.4);

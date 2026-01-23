@@ -1,4 +1,9 @@
 (function () {
+  // Import shared utilities
+  const { CONFIG, calculatePercentile, withAlpha, verticalHoverLinePlugin, createLogoPlugin, parseGwiData, parseHadcrutData } = window.GWIUtils;
+  const BASELINE_PERIOD_START = CONFIG.BASELINE_PERIOD_START;
+  const BASELINE_PERIOD_END = CONFIG.BASELINE_PERIOD_END;
+
   function init() {
     Promise.all([
       fetch("assets/data/gwi/gwi_timeseries.csv").then((r) => r.text()),
@@ -14,63 +19,32 @@
         const data = processData(gwiText, erfText, co2Text, hadcrutText);
         plotGraph(data);
       })
-      .catch((err) => console.error("Error loading forcings graph data:", err));
+      .catch((err) => window.GWIUtils.handleError("Forcings graph data loading", err));
   }
 
   function processData(gwiText, erfText, co2Text, hadcrutText) {
     // 1. GWI Parsing (Get Ant-50)
-    // Header is 2 rows. Row 1: variable, Row 2: percentile
-    const gwiLines = gwiText
-      .split("\n")
-      .filter((l) => l.trim() && !l.startsWith("#"));
-    // Find indices
-    const gwiHeader1 = gwiLines[0].split(",");
-    const gwiHeader2 = gwiLines[1].split(",");
-    let ant50Idx = -1;
-    for (let i = 0; i < gwiHeader1.length; i++) {
-      if (gwiHeader1[i].trim() === "Ant" && gwiHeader2[i].trim() === "50") {
-        ant50Idx = i;
-        break;
-      }
-    }
-
-    const gwiData = { years: [], ant50: [] };
-    const gwiDataLines = gwiLines.slice(3);
+    // Use shared parser
+    const gwiDataRaw = parseGwiData(gwiText, { requiredVars: ["Ant"] });
+    
     const yearMap = new Map(); // Use map to sync data
 
-    gwiDataLines.forEach((line) => {
-      const parts = line.split(",");
-      if (parts.length <= ant50Idx) return;
-      const year = parseFloat(parts[0]);
-      const val = parseFloat(parts[ant50Idx]);
-      if (!isNaN(year) && !isNaN(val)) {
-        gwiData.years.push(year);
-        gwiData.ant50.push(val);
-        yearMap.set(year, { ant: val }); // Init year map
+    // Populate gwi data
+    gwiDataRaw.years.forEach((year, i) => {
+      const val = gwiDataRaw.Ant.p50[i];
+      if (!isNaN(val)) {
+        yearMap.set(year, { ant: val });
       }
     });
 
     // 2. ERF Parsing (Get Ant-50 and co2-50 to calc "Other")
-    const erfLines = erfText.split("\n").filter((l) => l.trim());
-    const erfHeader1 = erfLines[0].split(",");
-    const erfHeader2 = erfLines[1].split(",");
-
-    let erfAnt50Idx = -1;
-    let erfCo250Idx = -1;
-    for (let i = 0; i < erfHeader1.length; i++) {
-      const v = erfHeader1[i].trim();
-      const p = erfHeader2[i].trim();
-      if (v === "Ant" && p === "50") erfAnt50Idx = i;
-      if (v === "co2" && p === "50") erfCo250Idx = i;
-    }
-
-    const erfDataLines = erfLines.slice(3);
-    erfDataLines.forEach((line) => {
-      const parts = line.split(",");
-      const year = parseFloat(parts[0]);
+    const erfDataRaw = parseGwiData(erfText, { requiredVars: ["Ant", "co2"] });
+    
+    erfDataRaw.years.forEach((year, i) => {
       if (yearMap.has(year)) {
-        const ant = parseFloat(parts[erfAnt50Idx]);
-        const co2 = parseFloat(parts[erfCo250Idx]);
+        const ant = erfDataRaw.Ant.p50[i];
+        const co2 = erfDataRaw.co2.p50[i];
+        
         // Other human forcings = Ant - co2
         if (!isNaN(ant) && !isNaN(co2)) {
           yearMap.get(year).otherForcing = ant - co2;
@@ -102,9 +76,29 @@
 
     // 4. HadCRUT Parsing (Observed Temp)
     const hadLines = hadcrutText.split("\n").filter((l) => l.trim());
+    const hadHeader = hadLines[0].split(",");
+    let realizationStartIdx = hadHeader.findIndex(
+      (h) => h.trim() === "Realization 1",
+    );
+    if (realizationStartIdx === -1) {
+      window.GWIUtils.handleError(
+        "HadCRUT Parsing",
+        "Could not find 'Realization 1' column in header",
+        true
+      );
+    }
+
+    // Dynamically determine number of realizations
+    const firstHadLine = hadLines[1];
+    let numRealizations = CONFIG.HADCRUT_REALIZATION_COUNT;
+    if (firstHadLine) {
+      const firstParts = firstHadLine.split(",");
+      numRealizations = firstParts.length - realizationStartIdx;
+    }
+
     const hadData = { years: [], val: [], error_upper: [], error_lower: [] };
 
-    // Calculate baseline 1850-1900
+    // Calculate baseline for BASELINE_PERIOD
     let baselineSum = 0;
     let baselineCount = 0;
     const hadDataTemp = []; // Store temporarily to apply baseline later
@@ -113,15 +107,15 @@
       const parts = line.split(",");
       const year = parseInt(parts[0]);
       const realizations = parts
-        .slice(3, 203)
+        .slice(realizationStartIdx, realizationStartIdx + numRealizations)
         .map((v) => parseFloat(v))
         .sort((a, b) => a - b);
 
-      const p5 = realizations[9];
-      const p50 = (realizations[99] + realizations[100]) / 2;
-      const p95 = realizations[189];
+      const p5 = calculatePercentile(realizations, 5);
+      const p50 = calculatePercentile(realizations, 50);
+      const p95 = calculatePercentile(realizations, 95);
 
-      if (year >= 1850 && year <= 1900) {
+      if (year >= BASELINE_PERIOD_START && year <= BASELINE_PERIOD_END) {
         baselineSum += p50;
         baselineCount++;
       }
@@ -163,25 +157,17 @@
     const ctx = document.getElementById("forcings-chart").getContext("2d");
     const style = getComputedStyle(document.documentElement);
 
-    const withAlpha = (color, alpha) => {
-      const match = (color || "").match(
-        /rgb\s*a?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
-      );
-      if (!match) return color;
-      return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${alpha})`;
-    };
-
-    // Canvas helper functions for custom legend swatches
+    // Canvas helper functions for custom legend swatches (kept local as only used here)
     const createCircleSwatch = (color, radius) => {
       const size = radius * 2 + 2;
       const canvas = document.createElement("canvas");
       canvas.width = size;
       canvas.height = size;
-      const ctx = canvas.getContext("2d");
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
+      const ctxSwatch = canvas.getContext("2d");
+      ctxSwatch.beginPath();
+      ctxSwatch.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+      ctxSwatch.fillStyle = color;
+      ctxSwatch.fill();
       return canvas;
     };
 
@@ -189,13 +175,13 @@
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext("2d");
+      const ctxSwatch = canvas.getContext("2d");
       // Left half
-      ctx.fillStyle = colorLeft;
-      ctx.fillRect(0, 0, width / 2, height);
+      ctxSwatch.fillStyle = colorLeft;
+      ctxSwatch.fillRect(0, 0, width / 2, height);
       // Right half
-      ctx.fillStyle = colorRight;
-      ctx.fillRect(width / 2, 0, width / 2, height);
+      ctxSwatch.fillStyle = colorRight;
+      ctxSwatch.fillRect(width / 2, 0, width / 2, height);
       return canvas;
     };
 
@@ -203,18 +189,18 @@
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext("2d");
+      const ctxSwatch = canvas.getContext("2d");
       // Fill area
-      ctx.fillStyle = fillColor;
-      ctx.fillRect(0, 0, width, height);
+      ctxSwatch.fillStyle = fillColor;
+      ctxSwatch.fillRect(0, 0, width, height);
       // Dashed line on top
-      ctx.strokeStyle = lineColor;
-      ctx.lineWidth = 2;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(0, 2);
-      ctx.lineTo(width, 2);
-      ctx.stroke();
+      ctxSwatch.strokeStyle = lineColor;
+      ctxSwatch.lineWidth = 2;
+      ctxSwatch.setLineDash([3, 3]);
+      ctxSwatch.beginPath();
+      ctxSwatch.moveTo(0, 2);
+      ctxSwatch.lineTo(width, 2);
+      ctxSwatch.stroke();
       return canvas;
     };
 
@@ -225,6 +211,24 @@
 
     // 2. Calculate Scaling Ratio
     const ratio = lastStack / lastAnt;
+
+    // Calculate dynamic Y-axis bounds
+    const allYTempValues = [
+      ...data.ant,
+      ...data.hadData.val,
+      ...data.hadData.error_upper,
+      ...data.hadData.error_lower,
+    ];
+    const minYTemp = Math.min(...allYTempValues);
+    const maxYTemp = Math.max(...allYTempValues);
+    const yTempRange = maxYTemp - minYTemp;
+    // Padding removed to tightly bound axis to nearest 0.5 step
+    const yMinTemp = Math.floor(minYTemp * 2) / 2;
+    const yMaxTemp = Math.ceil(maxYTemp * 2) / 2;
+
+    // Y1 axis (forcings) should scale with ratio
+    const yMinForcing = yMinTemp * ratio;
+    const yMaxForcing = yMaxTemp * ratio;
 
     // Fetch colors from CSS Variables
     const colorAnthro = style
@@ -388,69 +392,8 @@
       order: 0, // Top
     };
 
-    // Plugin: Vertical Hover Line
-    const verticalHoverLine = {
-      id: "verticalHoverLine",
-      beforeDraw: (chart) => {
-        if (chart.tooltip._active && chart.tooltip._active.length) {
-          const ctx = chart.ctx;
-          ctx.save();
-          const activePoint = chart.tooltip._active[0];
-          const x = activePoint.element.x;
-          const topY = chart.chartArea.top;
-          const bottomY = chart.chartArea.bottom;
-
-          ctx.beginPath();
-          ctx.moveTo(x, topY);
-          ctx.lineTo(x, bottomY);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "rgba(0,0,0,0.1)";
-          ctx.stroke();
-          ctx.restore();
-        }
-      },
-    };
-
-    const logoImg = new Image();
-    logoImg.src = "assets/img/eci-oxford-blue-text-RGB.png";
-
-    const logoPlugin = {
-      id: "logoPlugin",
-      afterDraw: (chart) => {
-        if (logoImg.complete && logoImg.naturalHeight !== 0) {
-          const ctx = chart.ctx;
-          const yAxis = chart.scales.y;
-
-          // Constraints: Between -0.5 and 0 on Y axis
-          const yZero = yAxis.getPixelForValue(0);
-          const yBottom = yAxis.getPixelForValue(-0.5);
-
-          // Calculate height of the band
-          const bandHeight = Math.abs(yBottom - yZero);
-          const padding = 10;
-
-          // Available height for image
-          const h = bandHeight - 2 * padding;
-
-          if (h > 0) {
-            const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
-            const w = h * aspectRatio;
-
-            // Position: Bottom right of the chart area
-            // Right edge aligned with chartArea.right
-            const xPos = chart.chartArea.right - w - padding;
-
-            // Y Position: Centered in the band
-            const yMid = (yZero + yBottom) / 2;
-            const yPos = yMid - h / 2;
-
-            ctx.save();
-            ctx.drawImage(logoImg, xPos, yPos, w, h);
-            ctx.restore();
-          }
-        }
-      },
-    };
+    // Use shared logo plugin
+    const logoPlugin = createLogoPlugin("assets/img/eci-oxford-blue-text-RGB.png");
 
     const config = {
       type: "line",
@@ -466,7 +409,7 @@
           dsAnt,
         ],
       },
-      plugins: [verticalHoverLine, logoPlugin],
+      plugins: [verticalHoverLinePlugin, logoPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -477,7 +420,7 @@
         scales: {
           x: {
             type: "linear",
-            min: 1850,
+            min: BASELINE_PERIOD_START,
             max: data.years[data.years.length - 1] + 2,
             offset: false,
             grid: {
@@ -502,14 +445,14 @@
             type: "linear",
             display: true,
             position: "left",
-            min: -0.5,
-            max: 2.0,
+            min: yMinTemp,
+            max: yMaxTemp,
             ticks: {
               stepSize: 0.5,
             },
             title: {
               display: true,
-              text: "GMST Warming relative to 1850-1900 (°C)",
+              text: `GMST Warming relative to ${BASELINE_PERIOD_START}-${BASELINE_PERIOD_END} (°C)`,
             },
             grid: {
               display: true,
@@ -520,8 +463,8 @@
             type: "linear",
             display: true,
             position: "right",
-            min: -0.5 * ratio,
-            max: 2.0 * ratio,
+            min: yMinForcing,
+            max: yMaxForcing,
             ticks: {
               stepSize: 0.5 * ratio,
             },
@@ -1061,6 +1004,8 @@
     };
 
     const myChart = new Chart(ctx, config);
+    // Handle logo image load
+    const logoImg = logoPlugin.getImage();
     if (!logoImg.complete) {
       logoImg.onload = () => myChart.update();
     }

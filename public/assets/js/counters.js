@@ -31,7 +31,7 @@
         setInterval(updateCounter, updateInterval);
         updateCounter();
       })
-      .catch((err) => console.error("Error loading climate data:", err));
+      .catch((err) => window.GWIUtils.handleError("Climate data loading", err));
   }
 
   function updateCounter() {

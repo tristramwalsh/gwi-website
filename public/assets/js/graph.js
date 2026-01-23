@@ -1,4 +1,9 @@
 (function () {
+  // Import shared utilities
+  const { CONFIG, withAlpha, parseGwiData, parseHadcrutData, verticalHoverLinePlugin, createLogoPlugin } = window.GWIUtils;
+  const BASELINE_PERIOD_START = CONFIG.BASELINE_PERIOD_START;
+  const BASELINE_PERIOD_END = CONFIG.BASELINE_PERIOD_END;
+
   function init() {
     // Initialize Graph (Logic adapted from new_graph.js)
     Promise.all([
@@ -10,112 +15,20 @@
       ).then((response) => response.text()),
     ])
       .then(([gwiText, hadcrutText]) => {
-        const gwiData = parseGwiData(gwiText);
+        const gwiData = parseGwiData(gwiText, { requiredVars: ["Nat", "Ant", "Tot"] });
+        // Use shared HadCRUT parser
         const hadcrutData = parseHadcrutData(hadcrutText);
 
         plotGraph(gwiData, hadcrutData);
       })
-      .catch((err) => console.error("Error loading graph data:", err));
+      .catch((err) => window.GWIUtils.handleError("Graph data loading", err));
   }
 
   // --- Graph Functions (Adapted from new_graph.js) ---
 
-  function parseGwiData(csvText) {
-    const lines = csvText
-      .split("\n")
-      .filter((line) => line.trim() !== "" && !line.startsWith("#"));
-    const dataLines = lines.slice(3); // Skip header lines
-    const years = [];
-    const ant = { 5: [], 50: [], 95: [] };
-    const nat = { 5: [], 50: [], 95: [] };
-    const tot = { 5: [], 50: [], 95: [] };
-
-    dataLines.forEach((line) => {
-      const parts = line.split(",");
-      if (parts.length < 26) return;
-
-      years.push(parts[0]);
-
-      nat[5].push(parseFloat(parts[6]));
-      nat[95].push(parseFloat(parts[9]));
-      nat[50].push(parseFloat(parts[10]));
-
-      ant[5].push(parseFloat(parts[16]));
-      ant[95].push(parseFloat(parts[19]));
-      ant[50].push(parseFloat(parts[20]));
-
-      tot[5].push(parseFloat(parts[21]));
-      tot[95].push(parseFloat(parts[24]));
-      tot[50].push(parseFloat(parts[25]));
-    });
-
-    return { years, nat, ant, tot };
-  }
-
-  function parseHadcrutData(csvText) {
-    const lines = csvText.split("\n").filter((line) => line.trim() !== "");
-    // Header is line 0
-    const dataLines = lines.slice(1);
-
-    const years = [];
-    const p5 = [];
-    const p50 = [];
-    const p95 = [];
-    const baselineValues = [];
-
-    dataLines.forEach((line) => {
-      const parts = line.split(",");
-      if (parts.length < 203) return; // Time + 2 metadata + 200 realizations
-
-      const year = parseInt(parts[0]);
-      years.push(year);
-
-      // Realizations are from index 3 to 202 (200 columns)
-      // Need to parse them all to sort find percentiles
-      const realizations = parts
-        .slice(3, 203)
-        .map((v) => parseFloat(v))
-        .sort((a, b) => a - b);
-
-      const val5 = realizations[9]; // 10th value
-      const val50 = (realizations[99] + realizations[100]) / 2;
-      const val95 = realizations[189]; // 190th value
-
-      p5.push(val5);
-      p50.push(val50);
-      p95.push(val95);
-
-      if (year >= 1850 && year <= 1900) {
-        baselineValues.push(val50);
-      }
-    });
-
-    // Calculate baseline (average of 50th percentiles from 1850-1900)
-    let baseline = 0;
-    if (baselineValues.length > 0) {
-      baseline =
-        baselineValues.reduce((a, b) => a + b, 0) / baselineValues.length;
-    }
-
-    // Subtract baseline from all values to get anomaly relative to 1850-1900
-    const p5_adj = p5.map((v) => v - baseline);
-    const p50_adj = p50.map((v) => v - baseline);
-    const p95_adj = p95.map((v) => v - baseline);
-
-    return { years, p5: p5_adj, p50: p50_adj, p95: p95_adj };
-  }
-
   function plotGraph(gwiData, hadcrutData) {
     const ctx = document.getElementById("climate-chart").getContext("2d");
     const style = getComputedStyle(document.documentElement);
-
-    const withAlpha = (color, alpha) => {
-      const match = (color || "").match(
-        /rgb\s*a?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
-      );
-      if (!match) return color;
-      return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${alpha})`;
-    };
 
     const datasets = [];
 
@@ -124,7 +37,7 @@
         // Upper bound (95%)
         datasets.push({
           label: name + " 95%",
-          data: data[95],
+          data: data.p95,
           borderColor: "transparent",
           backgroundColor: "transparent",
           pointRadius: 0,
@@ -137,7 +50,7 @@
         // Lower bound (5%) - fill to upper
         datasets.push({
           label: name + " 5%",
-          data: data[5],
+          data: data.p5,
           borderColor: "transparent",
           backgroundColor: withAlpha(color, 0.2),
           pointRadius: 0,
@@ -151,7 +64,7 @@
       // Median (50%)
       datasets.push({
         label: name,
-        data: data[50],
+        data: data.p50,
         borderColor: color,
         backgroundColor: color,
         fill: false,
@@ -170,9 +83,9 @@
     const colorObs = style.getPropertyValue("--color-plot-observations").trim();
     const colorObsErr = style.getPropertyValue("--color-plot-obs-err").trim();
 
-    addDatasets("Natural", colorNat, gwiData.nat, true);
-    addDatasets("Human-induced", colorAnt, gwiData.ant, true);
-    addDatasets("Combined response", colorTot, gwiData.tot, false);
+    addDatasets("Natural", colorNat, gwiData.Nat, true);
+    addDatasets("Human-induced", colorAnt, gwiData.Ant, true);
+    addDatasets("Combined response", colorTot, gwiData.Tot, false);
 
     // HadCRUT5 Line
     datasets.push({
@@ -210,7 +123,7 @@
           label: name + " 95%",
           data: gwiData.years.map((y, i) => ({
             x: parseFloat(y),
-            y: data[95][i],
+            y: data.p95[i],
           })),
           borderColor: "transparent",
           backgroundColor: "transparent",
@@ -228,7 +141,7 @@
           label: name + " 5%",
           data: gwiData.years.map((y, i) => ({
             x: parseFloat(y),
-            y: data[5][i],
+            y: data.p5[i],
           })),
           borderColor: "transparent",
           backgroundColor: withAlpha(color, 0.2),
@@ -247,7 +160,7 @@
         label: name,
         data: gwiData.years.map((y, i) => ({
           x: parseFloat(y),
-          y: data[50][i],
+          y: data.p50[i],
         })),
         borderColor: color,
         backgroundColor: color,
@@ -259,9 +172,9 @@
       });
     }
 
-    addParsedDatasets("Natural", colorNat, gwiData.nat, true, false);
-    addParsedDatasets("Human-induced", colorAnt, gwiData.ant, true, false);
-    addParsedDatasets("Combined response", colorTot, gwiData.tot, true, true);
+    addParsedDatasets("Natural", colorNat, gwiData.Nat, true, false);
+    addParsedDatasets("Human-induced", colorAnt, gwiData.Ant, true, false);
+    addParsedDatasets("Combined response", colorTot, gwiData.Tot, true, true);
 
     // HadCRUT Dots
     datasets.push({
@@ -297,85 +210,33 @@
     const minYear = Math.min(...gwiData.years.map((y) => parseFloat(y)));
     const maxYear = Math.max(...gwiData.years.map((y) => parseFloat(y)));
 
-    // Custom Positioner: Follows mouse Y, locks to data X
-    Chart.Tooltip.positioners.cursor = function (elements, eventPosition) {
-      if (!elements.length) return false;
-      return {
-        x: elements[0].element.x,
-        y: eventPosition.y,
-      };
-    };
+    // Calculate dynamic Y-axis bounds
+    const allYValues = [];
+    // Add GWI data
+    ["Nat", "Ant", "Tot"].forEach((dataset) => {
+      if (gwiData[dataset]) {
+        allYValues.push(...gwiData[dataset].p5, ...gwiData[dataset].p95);
+      }
+    });
+    // Add HadCRUT data
+    allYValues.push(...hadcrutData.p5, ...hadcrutData.p95);
 
-    // Plugin: Vertical Hover Line
-    const verticalHoverLine = {
-      id: "verticalHoverLine",
-      beforeDraw: (chart) => {
-        if (chart.tooltip._active && chart.tooltip._active.length) {
-          const ctx = chart.ctx;
-          ctx.save();
-          const activePoint = chart.tooltip._active[0];
-          const x = activePoint.element.x;
-          const topY = chart.chartArea.top;
-          const bottomY = chart.chartArea.bottom;
+    const minYValue = Math.min(...allYValues);
+    const maxYValue = Math.max(...allYValues);
+    const yRange = maxYValue - minYValue;
+    // Padding removed to tightly bound axis to nearest 0.5 step
+    const yMin = Math.floor(minYValue * 2) / 2;
+    const yMax = Math.ceil(maxYValue * 2) / 2;
 
-          ctx.beginPath();
-          ctx.moveTo(x, topY);
-          ctx.lineTo(x, bottomY);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "rgba(0,0,0,0.1)"; // Light grey like gridlines
-          ctx.stroke();
-          ctx.restore();
-        }
-      },
-    };
-
-    const logoImg = new Image();
-    logoImg.src = "assets/img/eci-oxford-blue-text-RGB.png";
-
-    const logoPlugin = {
-      id: "logoPlugin",
-      afterDraw: (chart) => {
-        if (logoImg.complete && logoImg.naturalHeight !== 0) {
-          const ctx = chart.ctx;
-          const yAxis = chart.scales.y;
-
-          // Constraints: Between -0.5 and 0 on Y axis
-          const yZero = yAxis.getPixelForValue(0);
-          const yBottom = yAxis.getPixelForValue(-0.5);
-
-          // Calculate height of the band
-          const bandHeight = Math.abs(yBottom - yZero);
-          const padding = 10;
-
-          // Available height for image
-          const h = bandHeight - 2 * padding;
-
-          if (h > 0) {
-            const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
-            const w = h * aspectRatio;
-
-            // Position: Bottom right of the chart area
-            // Right edge aligned with chartArea.right
-            const xPos = chart.chartArea.right - w - padding;
-
-            // Y Position: Centered in the band
-            const yMid = (yZero + yBottom) / 2;
-            const yPos = yMid - h / 2;
-
-            ctx.save();
-            ctx.drawImage(logoImg, xPos, yPos, w, h);
-            ctx.restore();
-          }
-        }
-      },
-    };
+    // Use shared logo plugin
+    const logoPlugin = createLogoPlugin("assets/img/eci-oxford-blue-text-RGB.png");
 
     const config = {
       type: "line",
       data: {
         datasets: datasets,
       },
-      plugins: [verticalHoverLine, logoPlugin],
+      plugins: [verticalHoverLinePlugin, logoPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -386,7 +247,7 @@
         scales: {
           x: {
             type: "linear",
-            min: 1850,
+            min: BASELINE_PERIOD_START,
             max: maxYear + 2,
             offset: false,
             title: { display: false },
@@ -413,8 +274,8 @@
             },
           },
           y: {
-            min: -0.5,
-            max: 2.0,
+            min: yMin,
+            max: yMax,
             grid: {
               display: true,
             },
@@ -423,7 +284,7 @@
             },
             title: {
               display: true,
-              text: "Temperature Anomaly (°C) relative to 1850-1900",
+              text: `Temperature Anomaly (°C) relative to ${BASELINE_PERIOD_START}-${BASELINE_PERIOD_END}`,
             },
           },
         },
@@ -559,6 +420,8 @@
     };
 
     const myChart = new Chart(ctx, config);
+    // Handle logo image load
+    const logoImg = logoPlugin.getImage();
     if (!logoImg.complete) {
       logoImg.onload = () => myChart.update();
     }

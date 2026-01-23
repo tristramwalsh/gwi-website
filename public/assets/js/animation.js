@@ -1,15 +1,12 @@
 (function () {
+  // Import shared utilities
+  const { CONFIG, calculatePercentile, withAlpha, createLogoPlugin } = window.GWIUtils;
+  const BASELINE_PERIOD_START = CONFIG.BASELINE_PERIOD_START;
+  const BASELINE_PERIOD_END = CONFIG.BASELINE_PERIOD_END;
+
   let chart;
   const ctx = document.getElementById("gwi-chart").getContext("2d");
   const annotationDiv = document.getElementById("chart-annotation");
-
-  const withAlpha = (color, alpha) => {
-    const match = (color || "").match(
-      /rgb\s*a?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
-    );
-    if (!match) return color;
-    return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${alpha})`;
-  };
 
   // Buttons
   const btnPrev = document.getElementById("btn-prev");
@@ -33,6 +30,7 @@
     timer: null,
     isPlaying: false,
     rmseCounterInterval: null,
+    yBounds: null,
   };
 
   const style = getComputedStyle(document.documentElement);
@@ -84,10 +82,19 @@
       ).then((r) => r.text()),
     ])
       .then(([erf, priors, gwi, hadcrut]) => {
-        state.erf = parseErfPriors(erf);
-        state.priors = parseErfPriors(priors);
-        state.gwi = parseGwi(gwi);
-        state.hadcrut = parseHadcrut(hadcrut);
+        state.erf = window.GWIUtils.parseGwiData(erf, {
+          requiredVars: ["Ant", "GHG", "Nat", "OHF", "Tot"],
+          minYear: BASELINE_PERIOD_START,
+        });
+        state.priors = window.GWIUtils.parseGwiData(priors, {
+          requiredVars: ["Ant", "GHG", "Nat", "OHF", "Tot"],
+          minYear: BASELINE_PERIOD_START,
+        });
+        state.gwi = window.GWIUtils.parseGwiData(gwi, {
+          requiredVars: ["Ant", "GHG", "Nat", "OHF", "Tot", "Res"],
+          minYear: BASELINE_PERIOD_START,
+        });
+        state.hadcrut = window.GWIUtils.parseHadcrutData(hadcrut);
 
         // Calculate Prior Residual: Observations - Prior Tot
         state.priors.Res = { p5: [], p50: [], p95: [] };
@@ -153,153 +160,6 @@
     state.step = state.step - 1;
     if (state.step < 0) state.step = 5;
     runStep(state.step);
-  }
-
-  /* -- Parsers -- */
-  function parseErfPriors(csv) {
-    const lines = csv.split("\n").filter((l) => l.trim().length > 0);
-    const dataLines = lines.slice(3);
-
-    const res = {
-      years: [],
-      Ant: { p5: [], p50: [], p95: [] },
-      GHG: { p5: [], p50: [], p95: [] },
-      Nat: { p5: [], p50: [], p95: [] },
-      OHF: { p5: [], p50: [], p95: [] },
-      Tot: { p5: [], p50: [], p95: [] },
-    };
-
-    dataLines.forEach((line) => {
-      const cols = line.split(",").map(parseFloat);
-      if (isNaN(cols[0])) return;
-      if (cols[0] < 1850) return;
-
-      res.years.push(cols[0]);
-
-      // Ant (1-5) -> 5, 17, 83, 95, 50
-      res.Ant.p5.push(cols[1]);
-      res.Ant.p95.push(cols[4]);
-      res.Ant.p50.push(cols[5]);
-
-      // GHG (6-10)
-      res.GHG.p5.push(cols[6]);
-      res.GHG.p95.push(cols[9]);
-      res.GHG.p50.push(cols[10]);
-
-      // Nat (11-15)
-      res.Nat.p5.push(cols[11]);
-      res.Nat.p95.push(cols[14]);
-      res.Nat.p50.push(cols[15]);
-
-      // OHF (16-20)
-      res.OHF.p5.push(cols[16]);
-      res.OHF.p95.push(cols[19]);
-      res.OHF.p50.push(cols[20]);
-
-      // Tot (21-25)
-      res.Tot.p5.push(cols[21]);
-      res.Tot.p95.push(cols[24]);
-      res.Tot.p50.push(cols[25]);
-    });
-    return res;
-  }
-
-  function parseGwi(csv) {
-    const lines = csv.split("\n").filter((l) => l.trim().length > 0);
-    const dataLines = lines.slice(3);
-
-    const res = {
-      years: [],
-      Ant: { p5: [], p50: [], p95: [] },
-      GHG: { p5: [], p50: [], p95: [] },
-      Nat: { p5: [], p50: [], p95: [] },
-      OHF: { p5: [], p50: [], p95: [] },
-      Tot: { p5: [], p50: [], p95: [] },
-      Res: { p5: [], p50: [], p95: [] },
-    };
-
-    dataLines.forEach((line) => {
-      const cols = line.split(",").map(parseFloat);
-      if (isNaN(cols[0])) return;
-      if (cols[0] < 1850) return;
-
-      res.years.push(cols[0]);
-
-      // GHG (1-5)
-      res.GHG.p5.push(cols[1]);
-      res.GHG.p95.push(cols[4]);
-      res.GHG.p50.push(cols[5]);
-
-      // Nat (6-10)
-      res.Nat.p5.push(cols[6]);
-      res.Nat.p95.push(cols[9]);
-      res.Nat.p50.push(cols[10]);
-
-      // OHF (11-15)
-      res.OHF.p5.push(cols[11]);
-      res.OHF.p95.push(cols[14]);
-      res.OHF.p50.push(cols[15]);
-
-      // Ant (16-20)
-      res.Ant.p5.push(cols[16]);
-      res.Ant.p95.push(cols[19]);
-      res.Ant.p50.push(cols[20]);
-
-      // Tot (21-25)
-      res.Tot.p5.push(cols[21]);
-      res.Tot.p95.push(cols[24]);
-      res.Tot.p50.push(cols[25]);
-
-      // Res (26-30)
-      res.Res.p5.push(cols[26]);
-      res.Res.p95.push(cols[29]);
-      res.Res.p50.push(cols[30]);
-    });
-    return res;
-  }
-
-  function parseHadcrut(csv) {
-    const lines = csv.split("\n").filter((l) => l.trim().length > 0);
-    const dataLines = lines.slice(1);
-
-    const parsedRows = [];
-    const baselineSums = new Array(200).fill(0);
-    let baselineCount = 0;
-
-    dataLines.forEach((line) => {
-      const cols = line.split(",").map(parseFloat);
-      if (cols.length < 203) return;
-
-      const year = cols[0];
-      if (year < 1850) return;
-
-      const vals = cols.slice(3, 203);
-      parsedRows.push({ year, vals });
-
-      if (year >= 1850 && year <= 1900) {
-        for (let i = 0; i < 200; i++) {
-          baselineSums[i] += vals[i];
-        }
-        baselineCount++;
-      }
-    });
-
-    const baselines = baselineSums.map((s) => s / baselineCount);
-
-    const res = { years: [], p5: [], p50: [], p95: [] };
-
-    parsedRows.forEach((row) => {
-      res.years.push(row.year);
-      const anomalies = row.vals.map((v, i) => v - baselines[i]);
-      anomalies.sort((a, b) => a - b);
-
-      // p5 (index 9), p95 (index 189), p50 (avg 99-100)
-      res.p5.push(anomalies[9]);
-      res.p95.push(anomalies[189]);
-      res.p50.push((anomalies[99] + anomalies[100]) / 2);
-    });
-
-    return res;
   }
 
   // --- Chart.js Logic ---
@@ -386,7 +246,54 @@
     });
 
     const years = state.erf.years; // Common labels
-    const maxYear = years.length > 0 ? years[years.length - 1] : 2024;
+    const maxYear =
+      years.length > 0 ? years[years.length - 1] : new Date().getFullYear();
+
+    // Calculate dynamic Y-axis bounds for ERF and Warming separately,
+    // but sharing the same zero-line position to ensure it doesn't jump.
+    const erfData = [];
+    ["GHG", "OHF", "Nat", "Ant", "Tot"].forEach((comp) => {
+      if (state.erf[comp])
+        erfData.push(...state.erf[comp].p5, ...state.erf[comp].p95);
+    });
+    const minErf = Math.min(...erfData);
+    const maxErf = Math.max(...erfData);
+
+    const warmData = [];
+    ["priors", "gwi"].forEach((ds) => {
+      if (!state[ds]) return;
+      ["GHG", "OHF", "Nat", "Ant", "Tot", "Res"].forEach((comp) => {
+        if (state[ds][comp])
+          warmData.push(...state[ds][comp].p5, ...state[ds][comp].p95);
+      });
+    });
+    if (state.hadcrut) warmData.push(...state.hadcrut.p5, ...state.hadcrut.p95);
+    const minWarm = Math.min(...warmData);
+    const maxWarm = Math.max(...warmData);
+
+    // Common zero position (vertical percentage from bottom)
+    const globalMin = Math.min(minErf, minWarm);
+    const globalMax = Math.max(maxErf, maxWarm);
+    const zeroPos = -globalMin / (globalMax - globalMin);
+
+    const calculateBounds = (dMin, dMax, zPos, paddingFactor) => {
+      const rangeNeededForMin = dMin / -zPos;
+      const rangeNeededForMax = dMax / (1 - zPos);
+      const yRange =
+        Math.max(rangeNeededForMin, rangeNeededForMax) * (1 + paddingFactor);
+      return { min: -zPos * yRange, max: (1 - zPos) * yRange };
+    };
+
+    const paddingFactor = 0.05; // Tight padding
+    state.yBounds = {
+      erf: calculateBounds(minErf, maxErf, zeroPos, paddingFactor),
+      warming: calculateBounds(minWarm, maxWarm, zeroPos, paddingFactor),
+    };
+
+    // Use shared logo plugin
+    const logoPlugin = createLogoPlugin("assets/img/eci-oxford-blue-text-RGB.png", {
+      position: "top-left",
+    });
 
     chart = new Chart(ctx, {
       type: "line",
@@ -405,9 +312,13 @@
           x: {
             type: "linear",
             bounds: "data",
-            min: 1850,
+            min: BASELINE_PERIOD_START,
             max: maxYear + 1,
             offset: false,
+            grid: {
+              display: false,
+              drawBorder: false,
+            },
             afterBuildTicks: function (axis) {
               // Ensure maxYear is included
               const hasMax = axis.ticks.find((t) => t.value === maxYear);
@@ -426,8 +337,14 @@
             title: { display: true, text: "Year" },
           },
           y: {
-            min: -2,
-            max: 3,
+            min: state.yBounds.erf.min,
+            max: state.yBounds.erf.max,
+            grid: {
+              drawBorder: false,
+            },
+            ticks: {
+              stepSize: 1,
+            },
             title: { display: true, text: "Value" },
           },
         },
@@ -486,42 +403,15 @@
             }
           },
         },
-        {
-          id: "eciLogo",
-          afterDraw: (chart) => {
-            const { ctx, chartArea } = chart;
-            if (!window.eciLogoImage) {
-              // Load the logo if not already loaded
-              window.eciLogoImage = new Image();
-              window.eciLogoImage.src =
-                "assets/img/eci-oxford-blue-text-RGB.png";
-              window.eciLogoImage.onload = () => {
-                chart.update(); // Re-render once logo is loaded
-              };
-            } else if (window.eciLogoImage.complete) {
-              // Draw the logo in the top-left corner of the plot area
-              const chartHeight = chartArea.bottom - chartArea.top;
-              const logoHeight = chartHeight * 0.15; // 8% of chart height
-              const logoWidth =
-                (window.eciLogoImage.width / window.eciLogoImage.height) *
-                logoHeight;
-              const padding = 10;
-
-              ctx.save();
-              ctx.globalAlpha = 0.8; // Slightly transparent
-              ctx.drawImage(
-                window.eciLogoImage,
-                chartArea.left + padding,
-                chartArea.top + padding,
-                logoWidth,
-                logoHeight,
-              );
-              ctx.restore();
-            }
-          },
-        },
+        logoPlugin,
       ],
     });
+
+    // Handle logo image load
+    const logoImg = logoPlugin.getImage();
+    if (!logoImg.complete) {
+      logoImg.onload = () => chart.update();
+    }
   }
 
   function runStep(stepNumber) {
@@ -695,6 +585,11 @@
     // Update Titles
     chart.options.plugins.title.text = LAYOUT_TITLES[stepNumber];
     chart.options.scales.y.title.text = AXIS_TITLES[stepNumber];
+
+    // Update Y-axis bounds (tighten specifically for Warming vs ERF)
+    const bounds = stepNumber === 0 ? state.yBounds.erf : state.yBounds.warming;
+    chart.options.scales.y.min = bounds.min;
+    chart.options.scales.y.max = bounds.max;
 
     // Update Annotation HTML
     annotationDiv.innerHTML = ANNOTATIONS[stepNumber];
