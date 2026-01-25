@@ -14,4 +14,7 @@ gwi.tar
 
 # Generated data (built from public/assets/data/gwi/*)
 public/assets/data/current_climate_state.json
+public/assets/data/current_erf_state.json
+public/assets/data/current_emissions_state.json
+
 

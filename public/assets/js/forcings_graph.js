@@ -302,7 +302,7 @@
 
     // Positive Non-CO2
     const dsOtherPos = {
-      label: "Other climate drivers",
+      label: "Non-CO2 drivers",
       data: ocdStackedPos.map((p) => ({ ...p })),
       backgroundColor: withAlpha(colorNonCO2, 0.6),
       borderColor: "transparent",
@@ -315,7 +315,7 @@
 
     // Negative Non-CO2
     const dsOtherNeg = {
-      label: "Other climate drivers (negative)",
+      label: "Non-CO2 drivers (negative)",
       data: ocdStackedNeg.map((p) => ({ ...p })),
       backgroundColor: withAlpha(colorNonCO2Neg, 0.6),
       borderColor: "transparent",
@@ -515,8 +515,8 @@
                 ) {
                   indicesToToggle.push(idx);
                 } else if (
-                  clickedLabel === "Other climate drivers" &&
-                  label.startsWith("Other climate drivers")
+                  clickedLabel === "Non-CO2 drivers" &&
+                  label.startsWith("Non-CO2 drivers")
                 ) {
                   indicesToToggle.push(idx);
                 } else if (label === clickedLabel) {
@@ -526,17 +526,17 @@
 
               // Determine visibility states BEFORE toggle
               const co2Visible = isVisible("Cumulative CO₂ emissions");
-              const ocdVisible = isVisible("Other climate drivers");
+              const ocdVisible = isVisible("Non-CO2 drivers");
               const clickedIsCO2 = clickedLabel === "Cumulative CO₂ emissions";
-              const clickedIsOCD = clickedLabel === "Other climate drivers";
+              const clickedIsOCD = clickedLabel === "Non-CO2 drivers";
 
               // Determine visibility states AFTER toggle
               const co2WillBeVisible = clickedIsCO2 ? !co2Visible : co2Visible;
               const ocdWillBeVisible = clickedIsOCD ? !ocdVisible : ocdVisible;
 
               // Get dataset indices
-              const idxOtherPos = findIdx("Other climate drivers");
-              const idxOtherNeg = findIdx("Other climate drivers (negative)");
+              const idxOtherPos = findIdx("Non-CO2 drivers");
+              const idxOtherNeg = findIdx("Non-CO2 drivers (negative)");
               const idxTotal = findIdx("All human-induced drivers");
               const idxCO2Area = findIdx("Cumulative CO₂ emissions area");
 
@@ -804,7 +804,7 @@
                   findIdx("Cumulative CO₂ emissions"),
                 );
                 const finalOCDVisible = chart.isDatasetVisible(
-                  findIdx("Other climate drivers"),
+                  findIdx("Non-CO2 drivers"),
                 );
                 if (!finalCO2Visible || !finalOCDVisible) {
                   chart.getDatasetMeta(idxTotal).hidden = true;
@@ -904,14 +904,14 @@
                   });
                 }
 
-                // 5. Other climate drivers - split color swatch
-                const dsOtherPosData = findDS("Other climate drivers");
+                // 5. Non-CO2 drivers - split color swatch
+                const dsOtherPosData = findDS("Non-CO2 drivers");
                 const dsOtherNegData = findDS(
-                  "Other climate drivers (negative)",
+                  "Non-CO2 drivers (negative)",
                 );
                 if (dsOtherPosData && dsOtherNegData) {
                   items.push({
-                    text: "Other climate drivers",
+                    text: "Non-CO2 drivers",
                     fillStyle: dsOtherPosData.backgroundColor,
                     strokeStyle: "transparent",
                     lineWidth: 0,
@@ -922,9 +922,9 @@
                       12,
                     ),
                     hidden: !chart.isDatasetVisible(
-                      findIdx("Other climate drivers"),
+                      findIdx("Non-CO2 drivers"),
                     ),
-                    datasetIndex: findIdx("Other climate drivers"),
+                    datasetIndex: findIdx("Non-CO2 drivers"),
                   });
                 }
 
@@ -950,7 +950,7 @@
                 }
 
                 // SHOW ISOLATED VALUE FOR "OTHER"
-                if (label === "Other climate drivers") {
+                if (label === "Non-CO2 drivers") {
                   const val = data.other[context.dataIndex];
                   return label + ": " + val.toFixed(3);
                 }
@@ -975,8 +975,8 @@
               },
               labelColor: (context) => {
                 const label = context.dataset.label || "";
-                // Dynamic color for "Other climate drivers" based on value
-                if (label === "Other climate drivers") {
+                // Dynamic color for "Non-CO2 drivers" based on value
+                if (label === "Non-CO2 drivers") {
                   const val = data.other[context.dataIndex];
                   const color =
                     val >= 0

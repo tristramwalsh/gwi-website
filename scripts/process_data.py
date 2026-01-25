@@ -114,7 +114,7 @@ def process_erf():
         return
 
     mapping = parse_csv_headers_2row(ts_file)
-    tot_idx = mapping[('Tot', '50')]
+    ant_idx = mapping[('Ant', '50')]
     co2_idx = mapping[('co2', '50')]
 
     data_points = []
@@ -124,7 +124,7 @@ def process_erf():
             if not row or not row[0] or not row[0][0].isdigit():
                 continue
             y = float(row[0])
-            val = float(row[tot_idx]) - float(row[co2_idx])
+            val = float(row[ant_idx]) - float(row[co2_idx])
             data_points.append((y, val))
 
     data_points.sort()

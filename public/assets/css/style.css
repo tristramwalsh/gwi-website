@@ -19,12 +19,13 @@
 
   --color-plot-ghg: rgb(47, 128, 124);
 
-  --color-plot-ohf: rgb(166, 212, 142);
+  --color-plot-ohf: rgb(115, 124, 71);
 
-  --color-plot-non-co2: rgb(212, 156, 104);
-  --color-plot-non-co2-neg: rgb(104, 212, 192);
+  --color-plot-non-co2: rgb(185, 134, 86);
+  --color-plot-non-co2-neg: rgb(93, 177, 162);
 
-  --color-plot-co2: rgb(106, 68, 79);
+  --color-plot-co2: rgb(100, 60, 72);
+  
 
   --color-plot-observations: rgb(61, 61, 61);
   --color-plot-obs-err: rgba(61, 61, 61, 0.4);
@@ -53,7 +54,7 @@ body {
   font-family: var(--font-base);
   color: var(--color-text);
   line-height: 1.6;
-  text-align: center; /* Keeping center alignment as per original design preference */
+  text-align: left;
 }
 
 /* Typography */
@@ -85,7 +86,7 @@ p {
   margin-bottom: 1.5rem;
   font-weight: 400;
   font-size: 1rem;
-  text-align: left; /* Default to left for readability */
+  /* text-align: left; Default is now left */
 }
 
 a {
@@ -134,7 +135,7 @@ header {
 }
 
 .stat-box {
-  display: inline-block;
+  display: block;
   padding: 0.5rem 1rem;
   margin: 0.5rem 0;
   background: var(--color-accent-grey);
@@ -142,15 +143,26 @@ header {
   font-family: var(--font-mono);
   font-size: 1.1rem;
   border-radius: 4px;
+  text-align: center;
 }
 
-.stat-box.primary {
+.stat-box.GWI {
   background: var(--color-plot-anthropogenic);
   font-size: 2rem;
 }
 
-.stat-box.black {
-  background: var(--color-black);
+.stat-box.co2 {
+  background: var(--color-plot-co2);
+}
+
+.stat-box.non-co2 {
+  background: var(--color-plot-non-co2);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-plot-non-co2-neg) 70%, transparent),
+    color-mix(in srgb, gray 70%, transparent),
+    color-mix(in srgb, var(--color-plot-non-co2) 70%, transparent)
+    );
 }
 
 .stat-box span {
@@ -182,53 +194,126 @@ header {
   text-align: center;
 }
 
+.fig-caption {
+  font-size: small;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+  text-align: center;
+}
+
 .equation-container {
   overflow-x: auto;
   padding: 1rem 0;
   margin: 1rem 0;
 }
 
+li {
+  margin-bottom: 1rem;
+}
+
 /* Semantic Text Colors */
 .text-natural {
   color: var(--color-plot-natural);
+  background-color: color-mix(in srgb, var(--color-plot-natural) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-anthropogenic {
   color: var(--color-plot-anthropogenic);
+  background-color: color-mix(in srgb, var(--color-plot-anthropogenic) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-total {
   color: var(--color-plot-total);
+  background-color: color-mix(in srgb, var(--color-plot-total) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-ghg {
   color: var(--color-plot-ghg);
+  background-color: color-mix(in srgb, var(--color-plot-ghg) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-ohf {
   color: var(--color-plot-ohf);
+  background-color: color-mix(in srgb, var(--color-plot-ohf) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-co2 {
   color: var(--color-plot-co2);
+  background-color: color-mix(in srgb, var(--color-plot-co2) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+.text-non-co2 {
+  color: var(--color-plot-non-co2);
+  background-color: color-mix(in srgb, var(--color-plot-non-co2) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+.text-non-co2-neg {
+  color: var(--color-plot-non-co2-neg);
+  background-color: color-mix(in srgb, var(--color-plot-non-co2-neg) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+.text-non-co2-blend {
+  color:var(--color-text-muted);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-plot-non-co2-neg) 20%, transparent),
+    color-mix(in srgb, gray 70%, transparent),
+    color-mix(in srgb, var(--color-plot-non-co2) 20%, transparent)
+    );
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-obs {
   color: var(--color-plot-observations);
+  background-color: color-mix(in srgb, var(--color-plot-observations) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-residual {
   color: var(--color-plot-residual);
+  background-color: color-mix(in srgb, var(--color-plot-residual) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 
 /* Legacy Utility Classes (Deprecated) */
 .text-blue {
   color: var(--color-accent-blue);
+  background-color: color-mix(in srgb, var(--color-accent-blue) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-orange {
   color: var(--color-accent-orange);
+  background-color: color-mix(in srgb, var(--color-accent-orange) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-purple {
   color: var(--color-accent-purple);
+  background-color: color-mix(in srgb, var(--color-accent-purple) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-red {
   color: var(--color-accent-red);
+  background-color: color-mix(in srgb, var(--color-accent-red) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-grey {
   color: var(--color-accent-grey);
+  background-color: color-mix(in srgb, var(--color-accent-grey) 20%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
 }
 .text-dark-grey {
   color: #333;
@@ -268,6 +353,12 @@ header {
   margin-top: 3rem;
   border-top: 1px solid #eee;
   padding-top: 1rem;
+}
+
+.citation {
+  font-size: small;
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 /* Footer */
@@ -312,7 +403,7 @@ svg {
     font-size: 1rem;
   }
 
-  .stat-box.primary {
+  .stat-box.GWI {
     font-size: 1.5rem;
   }
 
@@ -430,4 +521,183 @@ svg {
   .animation-container {
     height: 400px;
   }
+}
+
+/* Tree Diagram Styles - Left-Right Orientation */
+
+.tree-diagram li {
+  margin-bottom: -0.3rem;
+}
+
+.tree-diagram {
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+  --node-width: 150px;
+}
+
+.tree-diagram ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 15px;
+  margin: 0;
+  position: relative;
+}
+
+.tree-diagram li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  padding: 5px 0;
+  list-style-type: none;
+}
+
+/* Connectors */
+
+/* Vertical connection line for siblings (Left side of LI) */
+.tree-diagram li::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  border-left: 1px solid #ccc;
+  width: 1px;
+  height: 100%;
+  top: 0;
+}
+
+/* Horizontal connection line to the node */
+.tree-diagram li::after {
+  content: '';
+  position: absolute;
+  left: -15px;
+  border-top: 1px solid #ccc;
+  width: 15px;
+  top: 50%;
+}
+
+/* Adjustments for First/Last Child */
+.tree-diagram li:first-child::before {
+  top: 50%;
+  height: 50%;
+}
+.tree-diagram li:last-child::before {
+  height: 50%;
+  bottom: 50%;
+}
+
+/* Only child: No vertical line, but keep horizontal line from parent */
+.tree-diagram li:only-child::before {
+  display: none;
+}
+.tree-diagram li:only-child::after {
+  border-top: 1px solid #ccc;
+  /* Ensure it connects nicely */
+}
+
+/* Root Node Override */
+.tree-diagram > ul {
+  padding-left: 0;
+}
+.tree-diagram > ul > li::before, 
+.tree-diagram > ul > li::after {
+  display: none;
+}
+.tree-diagram > ul > li {
+  padding: 0;
+}
+
+/* Connector from Parent Node to Child UL */
+.tree-diagram li > ul {
+  position: relative;
+}
+
+/* Line extending from parent node layer to children layer */
+.tree-diagram li > ul::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 15px;
+  border-top: 1px solid #ccc;
+}
+
+/* Node Styling */
+.tree-node {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #333;
+  font-family: var(--font-base);
+  font-size: 11px;
+  display: inline-block;
+  border-radius: 5px;
+  background-color: white;
+  transition: all 0.5s;
+  position: relative;
+  z-index: 10;
+  min-width: var(--node-width);
+  width: var(--node-width);
+  margin-right: 15px; /* Space for connector to children */
+  white-space: normal;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Component lists inside nodes - Not used in full expansion but kept for safety */
+.component-list {
+  text-align: left;
+  font-size: 0.85em;
+  margin-top: 8px;
+  padding-left: 0;
+  border-top: 1px solid #eee;
+  padding-top: 5px;
+  list-style: none;
+}
+.component-list li {
+  padding: 2px 0;
+  text-align: left;
+  float: none;
+  /* Reset tree styles for internal lists if any remain */
+  display: block; 
+}
+.component-list li::before, .component-list li::after {
+  display: none;
+}
+
+/* Colors matching the variables */
+.node-obs { border: 2px solid var(--color-plot-observations); color: var(--color-black); font-weight: bold; }
+.node-residual { border: 2px solid var(--color-plot-residual); color: var(--color-text); }
+.node-total { border: 2px solid var(--color-plot-total); color: var(--color-black); font-weight: bold; }
+.node-natural { border: 2px solid var(--color-plot-natural); color: var(--color-text); }
+.node-ant { border: 2px solid var(--color-plot-anthropogenic); color: var(--color-black); font-weight: bold; }
+.node-ghg { border: 2px solid var(--color-plot-ghg); color: var(--color-text); }
+.node-ohf { border: 2px solid var(--color-plot-ohf); color: var(--color-text); }
+
+/* Spacer node for alignment */
+.node-linespacer {
+  border: none;
+  background: transparent;
+  min-width: var(--node-width);
+  width: var(--node-width);
+  padding: 0;
+  height: 1px;
+  margin-right: 15px; /* Match margin */
+  position: relative;
+  visibility: visible; /* Must be visible for pseudo-element to show */
+}
+
+/* Draw local horizontal line through the spacer */
+.node-linespacer::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  border-top: 1px solid #ccc;
+  height: 1px;
 }

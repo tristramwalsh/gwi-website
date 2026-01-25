@@ -15,7 +15,7 @@
       ).then((response) => response.text()),
     ])
       .then(([gwiText, hadcrutText]) => {
-        const gwiData = parseGwiData(gwiText, { requiredVars: ["Nat", "Ant", "Tot"] });
+        const gwiData = parseGwiData(gwiText, { requiredVars: ["Nat", "Ant", "Tot", "Res"] });
         // Use shared HadCRUT parser
         const hadcrutData = parseHadcrutData(hadcrutText);
 
@@ -32,7 +32,7 @@
 
     const datasets = [];
 
-    function addDatasets(name, color, data, showPlume = true) {
+    function addDatasets(name, color, data, showPlume = true, startHidden = false) {
       if (showPlume) {
         // Upper bound (95%)
         datasets.push({
@@ -71,6 +71,7 @@
         borderWidth: 2,
         pointRadius: 0,
         order: 1,
+        hidden: startHidden,
       });
     }
 
@@ -82,10 +83,12 @@
     const colorTot = style.getPropertyValue("--color-plot-total").trim();
     const colorObs = style.getPropertyValue("--color-plot-observations").trim();
     const colorObsErr = style.getPropertyValue("--color-plot-obs-err").trim();
+    const colorRes = style.getPropertyValue("--color-plot-residual").trim();
 
     addDatasets("Natural", colorNat, gwiData.Nat, true);
     addDatasets("Human-induced", colorAnt, gwiData.Ant, true);
     addDatasets("Combined response", colorTot, gwiData.Tot, false);
+    addDatasets("Internal Variability", colorRes, gwiData.Res, true, true);
 
     // HadCRUT5 Line
     datasets.push({
@@ -175,6 +178,7 @@
     addParsedDatasets("Natural", colorNat, gwiData.Nat, true, false);
     addParsedDatasets("Human-induced", colorAnt, gwiData.Ant, true, false);
     addParsedDatasets("Combined response", colorTot, gwiData.Tot, true, true);
+    addParsedDatasets("Internal Variability", colorRes, gwiData.Res, true, true);
 
     // HadCRUT Dots
     datasets.push({
@@ -213,7 +217,7 @@
     // Calculate dynamic Y-axis bounds
     const allYValues = [];
     // Add GWI data
-    ["Nat", "Ant", "Tot"].forEach((dataset) => {
+    ["Nat", "Ant", "Tot", "Res"].forEach((dataset) => {
       if (gwiData[dataset]) {
         allYValues.push(...gwiData[dataset].p5, ...gwiData[dataset].p95);
       }
@@ -327,6 +331,12 @@
                   clickedLabel === "Combined response" &&
                   (label === "Combined response" ||
                     label.startsWith("Combined response "))
+                ) {
+                  indicesToToggle.push(idx);
+                } else if (
+                  clickedLabel === "Internal Variability" &&
+                  (label === "Internal Variability" ||
+                    label.startsWith("Internal Variability "))
                 ) {
                   indicesToToggle.push(idx);
                 } else if (label === clickedLabel) {

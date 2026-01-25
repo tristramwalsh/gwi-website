@@ -19,28 +19,419 @@
     </header>
 
     <main>
-      <h3>What is human-induced warming?</h3>
+
+      <h3>Methodology</h3>
+
+      <p>
+        The
+        <span class="text-anthropogenic">Global Warming Index</span>
+        attribution method estimates contributions to
+        observed warming by separating out the contributions from various
+        human-induced and natural forcing drivers of climate change, and natural year-to-year fluctuations known as
+        internal variability.
+      </p>
+      <p>
+        The tree diagram below depicts the hierarchy separation of observed
+        global mean surface temperature into its constituent components:
+
+      <div class="tree-diagram">
+        <ul>
+          <li>
+            <div class="tree-node node-obs">Observed Warming</div>
+            <ul>
+              <li>
+                <div class="tree-node node-total">Total Forced Warming</div>
+                <ul>
+                  <li>
+                    <div class="tree-node node-ant">Human-induced</div>
+                    <ul>
+                      <li>
+                        <div class="tree-node node-ghg">Greenhouse Gases</div>
+                        <ul>
+                          <li><div class="tree-node node-ghg">CO<sub>2</sub></div></li>
+                          <li><div class="tree-node node-ghg">CH<sub>4</sub></div></li>
+                          <li><div class="tree-node node-ghg">N<sub>2</sub>O</div></li>
+                          <li><div class="tree-node node-ghg">F-gases</div></li>
+                        </ul>
+                      </li>
+                      <li>
+                        <div class="tree-node node-ohf">Other Human Forcings</div>
+                        <ul>
+                          <li><div class="tree-node node-ohf">Aerosol-radiation</div></li>
+                          <li><div class="tree-node node-ohf">Aerosol-cloud</div></li>
+                          <li><div class="tree-node node-ohf">Black carbon</div></li>
+                          <li><div class="tree-node node-ohf">Contrails</div></li>
+                          <li><div class="tree-node node-ohf">Ozone</div></li>
+                          <li><div class="tree-node node-ohf">Stratospheric H<sub>2</sub>O</div></li>
+                          <li><div class="tree-node node-ohf">Land use</div></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="tree-node node-natural">Natural</div>
+                    <ul>
+                      <li>
+                        <div class="tree-node node-linespacer"></div>
+                        <ul>
+                          <li><div class="tree-node node-natural">Solar</div></li>
+                          <li><div class="tree-node node-natural">Volcanic</div></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <div class="tree-node node-residual">Internal Variability</div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <p>
+
+      The attribution method separates the warming contributions through a
+      series of simple steps:
+      <ol>
+        <li>
+          <strong>Aggregate emissions and effective radiative forcings data:</strong>
+          Collect latest updated timeseries for all climate drivers (forcings),
+          including all natural and anthropogenic sources
+          <span class="citation">
+            [IGCC 2025, following IPCC AR6 WGI Ch.7 method]
+          </span>.
+          The individual forcings are aggregated into three groups:
+          <ul>
+            <li>
+              <span class="text-natural">Natural forcings</span> forcings:
+              solar and volcanic activity
+            </li>
+            <li>
+              <span class="text-ghg">Greenhouse Gas forcings</span> forcings:
+              CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O, and F-gases
+            </li>
+            <li>
+              <span class="text-ohf">Other human forcings</span>:
+              aerosol radiation interaction, aerosol-cloud interaction,
+              black carbon on snow, contrails, ozone,
+              stratospheric H<sub>2</sub>O, and
+              land use change
+            </li>
+          </ul>
+        <li>
+          <strong>Estimate temperature response using simple model:</strong>
+          A simple climate model that is commonly used in the IPCC
+          <span class="citation">
+            [FaIR v2.0 (Leach et al., 2021)]
+          </span>
+          is used to convert the forcing timeseries into initial
+          estimates of the temperature response for each component.
+
+          Warming is defined relative to the standard 1850-1900 baseline, but
+          but can be simply re-calculated for any baseline as needed.
+          
+        </li>
+        <li>
+          <strong>Combine components:</strong>
+          Sums are performed to combine the different warming contributions:
+          <ul>
+            <li>
+              <span class="text-anthropogenic">Human-induced</span>
+              =
+              <span class="text-ghg">greenhouse gas</span> +
+              <span class="text-ohf">other human forcings</span>
+            </li>
+            <li>
+              <span class="text-total">Total forced warming</span>
+              =
+              <span class="text-anthropogenic">human-induced</span> +
+              <span class="text-natural">natural</span>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Compare total forced warming to observations:</strong>
+          The estimated total forced warming is compared to observed global mean
+          surface temperature data.
+          <ul>
+            <li>
+              <span class="text-residual">Residual</span> =
+              <span class="text-obs">observed</span> –
+              <span class="text-total">total forced warming</span>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Scale forced warming to best match observations:</strong>
+          A simple least-squares fit is performed between the estimated total
+          forced warming and:
+          <ol>
+            <li>
+              realised global mean surface temperature from observations, and
+            </li>
+            <li>
+              alternative possible internal variability realisations from models
+            </li>
+          </ol>
+          
+          These additional constraints are used to scale each of the estimated
+          forced warming components, improving their accuracy and precision.
+          This process adjusts the warming estimates for all components
+          in order optimise the fit between modelled and real-world warming.
+          
+          Note: the optimisation removes any spurious contribution from forced
+          warming from the residual, so we interpret the optimised residual as
+          the
+          <span class="text-residual">internal variability</span>.
+          
+        </li>
+        <li>
+          <strong>Extract Global Warming Index:</strong>
+          The resulting index shows the best estimate of human-induced warming
+          along with the 5-95% uncertainty range due to the combined uncertainties
+          from forcings, observations, climate response and internal variability.
+
+        </li>
+      </ol>
+      
+      <p>
+        <strong>Uncertainty:</strong>
+        Uncertainty is estimated by repeating the above calculations for a
+        very large Monte Carlo ensemble of possible variations of:
+        (i) forcings ensemble
+        (1000 members of
+        <a href="https://essd.copernicus.org/articles/17/2641/2025/">
+        ERF
+        </a>
+        ),
+        (ii) observational data
+        (200 members of
+        <a href="https://www.metoffice.gov.uk/hadobs/hadcrut5/">
+        HadcRUT5
+        </a>
+        ),
+        (iii) climate response parameters
+        (~30 members of 6
+        <a href="https://gmd.copernicus.org/articles/14/3007/2021/">FaIR</a>
+        emulation parameters of CMIP6 simluations) 
+        and (iv) alternative internal variability realisations
+        (200 members of
+        <a href="https://gmd.copernicus.org/articles/9/1937/2016/">
+        CMIP6
+        </a>
+        pre-industrial control simulations).
+      </p>
+
+      <p>
+        The following animation steps through the calculation of the Global
+        Warming Index, showing how the different components are combined to
+        produce the final result. For simplicity, the 5-95% uncertainty plumes
+        are shown for every step of the process.
+      </p>
+      
+        
+
+      <div class="text-center paper">
+        <div id="gwi-animation-container" class="animation-container">
+          <canvas id="gwi-chart"></canvas>
+          <div id="rmse-indicator" class="rmse-indicator">
+            <div class="rmse-label">
+              Average difference between forced warming and observed warming
+            </div>
+            <span id="rmse-value">0.0000</span> K
+          </div>
+        </div>
+        <div id="chart-annotation" class="chart-annotation"></div>
+
+        <!-- Timeline -->
+        <div class="timeline-wrapper">
+          <div class="timeline-line-bg"></div>
+          <div id="timeline-progress" class="timeline-line-progress"></div>
+
+          <div class="timeline-step" data-index="0">1</div>
+          <div class="timeline-step" data-index="1">2</div>
+          <div class="timeline-step" data-index="2">3</div>
+          <div class="timeline-step" data-index="3">4</div>
+          <div class="timeline-step" data-index="4">5</div>
+          <div class="timeline-step" data-index="5">6</div>
+        </div>
+
+        <div class="button-group">
+          <button id="btn-prev" class="btn btn-secondary btn-sm">
+            Previous
+          </button>
+          <button id="btn-play-pause" class="btn btn-secondary btn-sm">
+            Pause
+          </button>
+          <button id="btn-next" class="btn btn-secondary btn-sm">Next</button>
+        </div>
+
+      </div>
+
+        <h3>Background to the Global Warming Index</h3>
 
       <p>
         The
         <a href="https://www.globalwarmingindex.org">globalwarmingindex.org</a>
         website shows an up-to-the-second index of human-induced warming
-        relative to the second half of the 19th century (1850-1900) based on the
-        standard "detection and attribution" approach introduced by
-        <a href="https://link.springer.com/article/10.1007/s003820050185"
-          >Hasselmann (1997)</a
-        >, first introduced in
+        relative to the second half of the 19th century (1850-1900).
+      </p>
+      <p>
+        The Global Warming Index was first introduced in
         <a
           href="https://www.nature.com/nclimate/journal/v5/n10/full/nclimate2716.html"
           >Otto et al. (2015)</a
         >
-        and published with a comprehensive uncertainty analysis in
+        based on a "detection and attribution" methodology originally developed
+        by
+        <a href="https://link.springer.com/article/10.1007/s003820050185"
+          >Hasselmann (1997)</a
+        >.
+        It was published with a comprehensive uncertainty analysis in
         <a href="https://www.nature.com/articles/s41598-017-14828-5"
-          >Haustein et al. (2017)</a
-        >. The authors affiliations are as follows:
+          >Haustein et al. (2017)</a>,
+        and work extending the robustness and utility of the Index is
+        ongoing.
+      </p>
+      <p>
+        The Global Warming Index is been used extensively in the IPCC
+        Assessment Reports to assess the level of global warming (including the 
+        <a href="https://www.ipcc.ch/sr15/">
+          Special Report on 1.5°C in 2018
+        </a>,
+        and the
+        <a href="https://www.ipcc.ch/assessment-report/ar6/">
+          6th Assessment Report in 2021
+        </a>),
+        and for more broadly tracking progression towards the Paris Agreement
+        goals.
+      </p>
+      
+      <h3>Annual Assessments and Reach</h3>
+      <p>
+        The GWI is under 
+        <a href="https://github.com/tristramwalsh/global-warming-index/">
+          active scientific development and maintenance
+        </a>
+        by researchers from the Environmental Change Institute at the
+        University of Oxford, UK, who provide systematic operarational annual
+        updates of the data and methodology.
+      </p>
+      <p>
+        These latest GWI datasets are peer reviewed and published as
+        part of the
+        <a href="https://essd.copernicus.org/articles/17/2641/2025/">
+        Indicators of Global Climate Change (IGCC)
+        </a>
+        initiative global annual climate assessments, which are released for
+        policymakers at the yearly UNFCCC Bonn meetings. These assessments 
+        have additionally been presented at the annual UNFCCC COP conferences,
+        and included in the
+        <a href="https://library.wmo.int/records/item/69455-state-of-the-global-climate-2024">
+          WMO State of the Climate Report
+        </a>.
+        </p>
+        <p>
+        The GWI is now widely used by policymakers, scientists, and climate
+        communicators around the world to track progress towards international
+        climate goals. As one example of reach, the IGCC's 2024 assessment was
+        the most featured climate article in the media in 2025,
+        <a href="https://www.carbonbrief.org/analysis-the-climate-papers-most-featured-in-the-media-in-2025/">
+          according to Carbon Brief
+        </a>
+        .
       </p>
 
+      
+
+      <h3>Usage of the GWI Data</h3>
+      <p>
+        To use the Global Warming Index data in publications, we kindly ask you
+        to cite the following papers.
+        <ul>
+          <li>
+            Forster et al. (2025) (the most recent published dataset paper)
+          </li>
+          <li>
+            Haustein et al. (2017) (the most recent published methodology
+            paper)
+          </li>
+        </ul>
+      </p>
+      
+      <h3>Relevant Papers</h3>
+
+      <ul class="biblio-list">
+        <li>
+          (IGCC) Forster et al., (2025).
+          <em
+            >Indicators of Global Climate Change 2024: annual update of key
+            indicators of the state of the climate system and human influence.
+          </em>
+          Earth System Science Data, doi:10.5194/essd-17-2641-2025
+        </li>
+        <li>
+          (IGCC) Forster et al., (2024).
+          <em
+            >Indicators of Global Climate Change 2023: annual update of key
+            indicators of the state of the climate system and human influence.
+          </em>
+          Earth System Science Data, doi:10.5194/essd-16-2625-2024
+        </li>
+        <li>
+          (IGCC) Forster et al., (2023).
+          <em
+            >Indicators of Global Climate Change 2022: annual update of
+            large-scale indicators of the state of the climate system and
+            human influence.
+          </em>
+          Earth System Science Data, doi:10.5194/essd-15-2295-2023
+        </li>
+        <li>
+          Haustein, K. et al. (2017).
+          <em>A global warming index</em>.
+          Nature Scientific Reports,
+          doi:10.1038/s41598-017-14828-5
+        </li>
+        <li>
+          Otto, F.E.L. et al. (2015).
+          <em>Embracing uncertainty in climate change policy</em>.
+          Nature Climate Change,
+          doi:10.1038/nclimate2716
+        </li>
+        <li>
+          Forster, P. et al. (2013).
+          <em>
+            Evaluating adjusted forcing and model spread for historical and
+            future scenarios in the CMIP5 generation of climate models.
+            </em>
+          Journal of Geophysical Research, 118, 1-12
+          doi:10.1002/jgrd.50174
+        </li>
+        <li>
+          Hasselmann, K. (1997).
+          <em>
+            Multi-pattern fingerprint method for detection and attribution of
+            climate change.
+          </em>
+          Climate Dynamics, 13(9), 601-611
+        </li>
+      </ul>
+
+
+
+      <h3>Contributing authors</h3>
+      
+      The contributing authors and their affiliations are as follows:
       <ul class="authors-list">
+        <li>
+          <strong>Tristram Walsh</strong>,
+          <em>
+            Researcher, Environmental Change Institute, University of Oxford,
+            UK
+          </em>
+          (<a href="https://www.geog.ox.ac.uk/graduate/research/twalsh.html">Contact</a>)
         <li>
           <strong>Karsten Haustein</strong>,
           <em
@@ -98,236 +489,13 @@
         </li>
       </ul>
 
-      <p>
-        The index estimates contributions to observed climate change and removes
-        the impact of natural year-to-year fluctuations, by a simple
-        least-squares-fit between observed temperatures provided by four
-        different research centers (<a
-          href="https://www.metoffice.gov.uk/hadobs/hadcrut4/"
-          >UK Met Office</a
-        >;
-        <a
-          href="https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html"
-          >Cowtan and Way</a
-        >;
-        <a
-          href="https://www.esrl.noaa.gov/psd/data/gridded/data.noaaglobaltemp.html"
-          >NOAA</a
-        >; <a href="https://data.giss.nasa.gov/gistemp/maps/">NASA</a>;
-        <span class="text-obs">Observations</span>) at the end of every month
-        and estimated responses to human-induced and natural drivers of climate
-        change (<span class="text-anthropogenic">Human-Induced</span> and
-        <span class="text-natural">Natural</span> contributions). The forcing
-        responses are provided by the standard simple climate model given in
-        <a
-          href="https://www.climatechange2013.org/images/report/WG1AR5_Ch08SM_FINAL.pdf"
-          >Chapter 8</a
-        >
-        of IPCC (2013), but the size of these responses (and so the climate
-        sensitivity) is estimated by the fit to the observations. The animated
-        image below demonstrates the methodology that we apply to obtain the
-        final Global Warming Index.
-      </p>
-
-      <div class="text-center">
-        <div id="gwi-animation-container" class="animation-container">
-          <canvas id="gwi-chart"></canvas>
-          <div id="rmse-indicator" class="rmse-indicator">
-            <div class="rmse-label">
-              Average difference between forced warming and observed warming
-            </div>
-            <span id="rmse-value">0.0000</span> K
-          </div>
-        </div>
-        <div id="chart-annotation" class="chart-annotation"></div>
-
-        <!-- Timeline -->
-        <div class="timeline-wrapper">
-          <div class="timeline-line-bg"></div>
-          <div id="timeline-progress" class="timeline-line-progress"></div>
-
-          <div class="timeline-step" data-index="0">1</div>
-          <div class="timeline-step" data-index="1">2</div>
-          <div class="timeline-step" data-index="2">3</div>
-          <div class="timeline-step" data-index="3">4</div>
-          <div class="timeline-step" data-index="4">5</div>
-          <div class="timeline-step" data-index="5">6</div>
-        </div>
-
-        <div class="button-group">
-          <button id="btn-prev" class="btn btn-secondary btn-sm">
-            Previous
-          </button>
-          <button id="btn-play-pause" class="btn btn-secondary btn-sm">
-            Pause
-          </button>
-          <button id="btn-next" class="btn btn-secondary btn-sm">Next</button>
-        </div>
-        <p>
-          <small
-            ><em
-              >Animation of the main steps needed to estimate the Global Warming
-              Index. The first and second step shows observations and natural
-              and anthropogenic foring estimates (W/m2), including 200 different
-              realisations that comprise the full forcing uncertainty. The third
-              step is the application of the response model which converts
-              forcing in a fast and slow temperature equivalent as a function of
-              the best estimate for TCR, ECS and the response times. In the
-              fourth and fifth step, the sum of the two responses before
-              regression with the observed temperature is shown together with
-              the resulting <span class="text-total">Combined Response</span>.
-              The sixth step is the same response after multiplying it with the
-              slope provided by the least-square-fit between temperature and
-              natural/anthropogenic response. Finally, the full uncertainty
-              range for the natural and the human-induced contributions is
-              estimated and added to the graph.
-            </em></small
-          >
-        </p>
-      </div>
-
-      <p>
-        The plumes in the Global Warming Index show the 5-95% ranges in
-        estimated human-induced and natural warming due to uncertainties in
-        <a href="https://www.metoffice.gov.uk/hadobs/hadcrut5/"
-          >UK observations</a
-        >
-        (100 possible variations),
-        <a href="assets/data/legacy/forcing.txt">forcing</a> (200 possible
-        variations) and response model (20 possible variations). The forcing
-        shape uncertainty is estimated using a Monte Carlo method as applied in
-        Box 9.2 in
-        <a
-          href="https://www.climatechange2013.org/images/report/WG1AR5_Chapter09_FINAL.pdf"
-          >Chapter 9</a
-        >
-        of IPCC (2013) and further detailed in
-        <a
-          href="https://people.oregonstate.edu/~schmita2/Teaching/ATS421-521/2013/papers/forster13jgr.pdf"
-          >Forster et al 2013</a
-        >. The response model uncertainty covers a wide range of TCR/ECS
-        (Transient Climate Response/Equilibrium Climate Sensitivity) ratios as
-        well as fast response times. The contribution to the overall uncertainty
-        is small, however. Instead, the total uncertainty is dominated by the
-        forcing uncertainty.
-      </p>
-
-      <p>
-        A supplementary <strong>spreadsheet</strong> to calculate the monthly
-        index with data up to the lastest months is
-        <a href="assets/data/legacy/AWI_AR5_new_spreadsheet.xlsx"
-          >available for download here.</a
-        >
-      </p>
-
-      <p>
-        As shown in the second plot on the <a href="index.html">main page</a>,
-        we have expressed the total effect of other human influences on climate
-        by how much they reduce outgoing energy, in units of Watts per square
-        metre (W/m<sup>2</sup>). Added up over the entire planet, 1 W/m<sup
-          >2</sup
-        >
-        from these other influences has approximately the same impact on global
-        temperature as the emission of 1 trillion tonnes of carbon dioxide
-        (CO<sub>2</sub>). Hence total carbon dioxide emissions in trillion
-        tonnes of CO<sub>2</sub> plus other human influences in W/m<sup>2</sup>,
-        all multiplied by the “Transient Climate Response to Emissions”
-        (approximately 0.4°C/TtCO<sub>2</sub>), gives total human-induced
-        warming. The carbon dioxide emissions counter uses the most recent
-        update of the Global Carbon Project’s Global Carbon Budget, available
-        <a href="https://www.globalcarbonproject.org/carbonbudget">here</a>.
-        Human-induced warming and radiative forcing are expressed relative to
-        the 1850-1900 period and CO<sub>2</sub> emissions are cumulative from
-        1875.
-      </p>
-
-      <p>
-        In addition, the choice of the observational data set and the reference
-        period have a noticeable impact on the results. While initially, the GWI
-        was expressed relative to the 30-year average of the standard reference
-        period 1850-1879, which is characterised by little volcanic activity,
-        and hence comparable to the most recent 25 years, the IPCC is using a
-        alternative, longer reference period from 1850-1900. Because of that,
-        GWI now uses the same 1850-1900 baseline. Since this period is affected
-        by the Krakatoa eruption, both the human-induced warming fraction and
-        the and natural contribution are notably different as illustrated in the
-        figure below. However, the uncertainty due to different observational
-        datasets is considerably higher. While this may not be a problem in the
-        longer term as datasets are further refined, there have (cool) been
-        biases due the missing coverage of the rapidly warming Arctic areas,
-        which is still the case in the version of NOAA-MLOST used here. We note
-        that the UK Met Office has updated their global temperature dataset
-        HadCRUT4 to HadCRUT5 at the end of 2020, which led to a notable increase
-        in the GWI as HadCRUT5 covers the Arctic. To reflect these
-        uncertainties, the IPCC is using the aggregate average of four common
-        global mean temperature datasets: HadCRUT4 (now replaced by HadCRUT5),
-        HadCRUT4-Cowtan/Way, NOAA-MLOST and NASA GISTEMP. For the current
-        version of the GWI, we adopted the IPCC approach and provide the
-        estimate for the human-induced warming based on those four dataset.
-      </p>
-
-      <div class="text-center">
-        <img
-          src="assets/img/AWI_AR5_new_info.png"
-          alt="Global Warming Index for HadCRUT4 and HadCRUT4-Cowtan/Way for two reference periods"
-        />
-        <p>
-          <small
-            ><em
-              >Top row: GWI based on HadCRUT4 and the standard 1850-79 reference
-              period (left), or the longer 1850-1900 alternative reference
-              period. Bottom row: As top row but using HadCRUT4-Cowtan/Way as
-              observational data set. It covers remote polar regions which have
-              seen stronger warming in recent years, leading to a higher
-              fraction of human-induced attributable warming.</em
-            ></small
-          >
-        </p>
-      </div>
-
-      <p>
-        We note that the monthly index uncertainty range is +/-0.0013K (95%
-        confidence level). By this we refer to the uncertainty introduced by
-        adding a new datapoint to the observed monthly temperature, or, in other
-        words, it is the monthly variability of the Global Warming Index.
-      </p>
-
-      <h3>Relevant Papers</h3>
-
-      <ul class="biblio-list">
-        <li>
-          Haustein, K. et al. (2017).
-          <em>A global warming index</em>. Nature Scientific Reports,
-          doi:10.1038/s41598-017-14828-5
-        </li>
-        <li>
-          Otto, F.E.L. et al. (2015).
-          <em>Embracing uncertainty in climate change policy</em>. Nature
-          Climate Change, doi:10.1038/nclimate2716
-        </li>
-        <li>
-          Forster, P. et al. (2013).
-          <em
-            >Evaluating adjusted forcing and model spread for historical and
-            future scenarios in the CMIP5 generation of climate models</em
-          >. Journal of Geophysical Research, 118, 1-12, doi:10.1002/jgrd.50174
-        </li>
-        <li>
-          Hasselmann, K. (1997).
-          <em
-            >Multi-pattern fingerprint method for detection and attribution of
-            climate change</em
-          >. Climate Dynamics, 13(9), 601-611
-        </li>
-      </ul>
-
       <nav class="back-link">
         <p><a href="index.html">&larr; Back to Main page</a></p>
       </nav>
     </main>
 
     <footer>
-      <p>Design: Tristram Walsh, Myles Allen &amp; Christopher Leedham</p>
+      <p>Design: Christopher Leedham, Myles Allen, Tristram Walsh</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -27,7 +27,7 @@
     </header>
 
     <main>
-      <div id="current-temp-rise" class="stat-box primary">
+      <div id="current-temp-rise" class="stat-box GWI">
         Human-induced warming: <span>----------------</span> &deg;C
       </div>
 
@@ -47,103 +47,179 @@
         <div class="chart-area">
           <canvas id="climate-chart"></canvas>
         </div>
-        <p class="text-center">
+        <p class="text-center fig-caption">
           This graph shows how global temperatures have risen over the past 170
           years, using attribution science to understand the causes of this
-          change and smooth out natural fluctuations.
+          change and filter out natural fluctuations. The best estimates for
+          each component are given as lines (or dots), and amount of
+          uncertainty is shown as shaded areas (or error bars), for attributed
+          warming (and observed warming) respectively.
+        </p>
+        <p class="text-center fig-caption">
+          Click items in the legend to show/hide different lines.
         </p>
       </div>
 
       <p>
-        The <span class="text-obs">Observations</span> show real-world
-        observations of global mean temperature. Although there is some
-        year-to-year variation, the Earth’s temperature has been steadily
-        increasing since the 1960s. This cannot be explained by natural causes.
-      </p>
-      <p>
-        The
-        <span class="text-natural">Natural Contribution</span> shows the
-        estimated contribution to Earth’s temperature change from natural
+        <span class="text-natural">Natural Contribution</span>
+        shows the
+        estimated contribution to Earth's temperature change from natural
         causes, such as changes in solar activity and volcanic eruptions. These
-        account for some of the variation in global temperatures, but they can’t
-        explain the overall warming.
+        account for some of the variation in global temperatures, but they
+        cannot explain the overall warming.
       </p>
       <p>
-        The
-        <span class="text-anthropogenic">Human-Induced Contribution</span> shows
-        the estimated contribution from human-induced global warming, caused by
-        the burning of fossil fuels or other forms of pollution. Since this line
-        closely follows the temperatures observed in the real world, it shows
-        that the overall warming can largely be attributed to human activity.
-        However, it is still not an exact match.
+        <span class="text-anthropogenic">Human-Induced Contribution</span>
+        shows the estimated contribution from all human activities,
+        including the burning of fossil fuels, other forms of pollution, and
+        our changing uses of land.
+        Since this line closely follows the temperatures observed in the real
+        world, it shows that the observed warming can largely be attributed to
+        human activity. However, it is not an exact match for observed
+        temperatures.
+        
+
+      </p>
+
+      <p>
+        <span class="text-total">Combined Response</span>
+        shows the combined impacts of human-induced and natural changes - this
+        is the "<strong>signal</strong>". This line more closely matches the
+        observed temperatures, and shows that human-induced changes, plus some
+        natural forcing, has caused the global warming trend we see today.
       </p>
       <p>
-        The <span class="text-total">Combined Response</span> shows the combined
-        impacts of human-induced and natural changes. This line most closely
-        matches the observed temperatures, and shows that human-induced changes,
-        plus some natural forcing, has caused the global warming we see today.
+        <span class="text-obs">Observations</span>
+        show real-world observations of global mean temperature. The
+        Earths temperature has been steadily increasing since the 1960s, very
+        close to the combined forced warming. Today, essentially all of the
+        observed warming is human-induced. The uncertainty has decreased
+        significantly since the 1950s, due to a huge increase in the quantity
+        and quality of data.
+      </p>  
+      <p>
+        <span class="text-residual">Internal Variability</span>
+        is the <strong>"noise"</strong> contribution from natural fluctuations
+        in the climate system, such as from El Niño and La Niña events, which
+        cause the short-term fluctuations of the Observations above and below
+        the Combined Response line. Internal Variability does not cause the
+        long-term global warming trend, but does meaningfully contribute to
+        annual extreme events.
       </p>
       <p>
+        <strong>Attribution science</strong> is used to separate out the
+        various <strong>"signal"</strong> and <strong>"noise"</strong>
+        contributions to global temperature change, using multiple
+        lines of evidence, including observed temperature records, radiative
+        forcing data, climate model simulations, and statistical methods. The
+        results are consistent across these many different approaches,
+        providing robust evidence for the human influence on global
+        temperatures.
+
         <a href="https://www.youtube.com/watch?v=luCN7mFuWLY">Find out more</a>
         about attribution science in this video from Dr Friederike Otto, one of
         the pioneers of attribution science.
       </p>
+      
+      <p>
+        <a href="info_page.html">See here</a> for further details about the
+        numbers, graphics, and methods used above, and an animation showing
+        how the GWI attribution method works.
+      </p>      
+
+      </p>
 
       <h3>What contributes to human-induced global warming?</h3>
 
-      <div id="current-carbon-emissions" class="stat-box black">
-        Total Carbon Dioxide emissions: <span>----------------</span> trillion
-        tonnes
+      <div class="stat-box co2">
+        <div id="current-carbon-emissions">
+          Total Carbon Dioxide emissions: <span>----------------</span> trillion
+          tonnes
+        </div>
+        <div id="current-carbon-emissions_gtc" style="font-size: small;">
+          (Equivalent tonnes of Carbon: <span>----------------</span> tonnes)
+        </div>
       </div>
 
-      <div id="current-carbon-emissions_gtc" class="stat-box black">
-        (Equivalent tonnes of Carbon: <span>----------------</span> tonnes)
+
+      <p>
+        This number shows an up-to-the second assessment of 
+        <span class="text-co2"
+          >cumulative carbon dioxide (CO<sub>2</sub>) emissions</span>.
+          CO<sub>2</sub> emissions are the biggest contributor to human-induced
+          climate change.
+      </p>
+
+      <div id="current-nonCO2_RF" class="stat-box non-co2">
+        Other Human influences on climate: <span>----------------</span> Watts
+        per square metre
       </div>
 
       <p>
-        This number shows an up-to-the second assessment of total global carbon
-        dioxide emissions (CO<sub>2</sub>). CO<sub>2</sub> emissions are the
-        biggest contributor to human-induced climate change.
+        This number shows an up-to-the second estimate of all other
+        <span class="text-non-co2-blend">non-CO<sub>2</sub> human
+          influences</span> on energy coming in and out of the Earth's
+          atmosphere, measured in W/m<sup>2</sup>.
+
+        Depending on the specific activity and its history, these influences
+        can either contribute to 
+        <span class="text-non-co2-neg">cooling</span> and/or
+        <span class="text-non-co2">warming</span>
+        .
+
+        While the specific warming and cooling profile of these other human
+        influences depends on the specific activities and pollution, they
+        collectively caused a slight masking of the warming from CO<sub>2</sub>
+        emissions prior to the 1980s, and have since then have caused additional
+        warming on top of CO<sub>2</sub> warming.
       </p>
 
       <div class="paper">
         <div class="chart-area">
           <canvas id="forcings-chart"></canvas>
         </div>
-        <p class="text-center">
+        <p class="text-center fig-caption">
           This graph shows how the main drivers are contributing to
-          human-induced global warming.<br />
-          The <span class="text-co2">CO<sub>2</sub> Emissions</span> shows
-          CO<sub>2</sub> emissions added up over time.
+          human-induced global warming. 
+          <span class="text-co2">Cumulative CO<sub>2</sub> Emissions</span>
+          shows CO<sub>2</sub> emissions added up over time.
+          <span class="text-non-co2-blend">Non-CO<sub>2</sub> drivers</span> shows
+          the net impact from a long list of other human activities that affect
+          the Earth's energy balance, some of which cause warming and some
+          cooling.
+        </p>
+        <p class="text-center fig-caption">
+          Click items in the legend to show/hide different lines.
         </p>
       </div>
 
+      <h3>Why do net CO<sub>2</sub> emissions matter?</h3>
       <p>
         CO<sub>2</sub> emissions account for the majority of global warming.
+        Warming from CO<sub>2</sub> emissions will continue to increase as long
+        as the total amount of CO<sub>2</sub> cumulatively emitted continues to
+        rise. When cumulative emissions stop increasing, the cumulative
+        emissions line in the graph above flattens out, and so does the warming
+        from CO<sub>2</sub>.
+
+      </p>
+      <p>
+        The only way to stop additional warming from CO<sub>2</sub> emissions
+        is to stop the increase in their cumulative emissions, which means
+        reaching a state where net annual emissions of CO<sub>2</sub>
+        (emissions minus removals) are zero: this is known as a state of
+        'net zero' carbon dioxide emissions.
       </p>
       <p>
         In the 2015 Paris Agreement countries around the world agreed to work
-        towards achieving ‘net zero’ carbon dioxide emissions. First and
-        foremost, this means reducing CO<sub>2</sub> emissions. In order to meet
-        climate targets, it will also be necessary to remove some CO<sub>2</sub>
-        from the atmosphere. This could be done by through biological pathways
-        such as forest restoration, or through technologies such as carbon
-        capture and storage.
+        towards achieving 'net zero' carbon dioxide emissions. First and
+        foremost, this means reducing CO<sub>2</sub> emissions. In order to
+        meet climate targets, it will also be necessary to remove some
+        CO<sub>2</sub> from the atmosphere. This could be done by through
+        biological pathways such as forest restoration, or through technologies
+        such as carbon capture and storage.
       </p>
 
-      <h3>What else contributes to human-induced global warming?</h3>
-
-      <div id="current-nonCO2_RF" class="stat-box">
-        Other Human influences on climate: <span>----------------</span> Watts
-        per square metre
-      </div>
-
-      <p>
-        This number shows an up-to-the second estimate of other human influences
-        on climate. These changes cause an additional amount of heat energy to
-        be trapped in the climate system, contributing to global warming,
-        measured in W/m<sup>2</sup>.
-      </p>
 
       <h3>
         How do CO<sub>2</sub> emissions and other climate drivers contribute to
@@ -151,56 +227,111 @@
       </h3>
 
       <p>
-        In the second figure above, the total human-induced global warming
-        (<span class="text-anthropogenic">Human-Induced Contribution</span>)
+        In the second figure above, the total 
+        <span class="text-anthropogenic">human-induced global warming</span>
         estimated from observed temperatures is given almost exactly by simply
-        adding the warming caused by CO<sub>2</sub> emissions (<span
-          class="text-co2"
-          >cumulative emissions</span
-        >) to the warming caused by other human activities (<span
-          class="text-ohf"
-          >Other Human Forcings</span
-        >): all lines of evidence agree on what is driving global temperature
-        change.
+        adding the warming caused
+        <span class="text-co2">cumulative CO<sub>2</sub> emissions</span>
+        to the temperature changes caused by 
+        <span class="text-non-co2-blend">other human activities</span>:
+        all lines of evidence agree on what is driving the global temperature
+        change that we directly <span class="text-obs">observe</span>.
       </p>
       <p>
-        Human-induced warming (<span class="text-anthropogenic"
-          ><em>&Delta;T</em></span
-        >) over a time-interval ranging from seconds to decades is proportional
-        to total cumulative carbon dioxide emissions over that time-interval
-        (<i>E</i>) plus the impact of any change in global energy imbalance due
-        to other human influences on climate (<span class="text-ohf"
-          ><em>&Delta;F</em></span
-        >).
+        Human-induced warming
+        (<span class="text-anthropogenic"><em>&Delta;T</em></span>)
+        over a time-interval ranging from seconds to decades is
+
+        <ul>
+          <li>
+            <strong>proportional</strong>
+            to total cumulative carbon dioxide emissions over that time-interval
+            (<span class="text-co2"><em>E</em></span>)
+          </li>
+          <li>
+            <strong>plus</strong> the impact of any change in global energy
+            imbalance due to other human influences on climate
+            (<span class="text-non-co2-blend"><em>&Delta;F</em></span>).
+          </li>
+        </ul>
       </p>
-      <p>We can write this as an equation [1]:</p>
+
+      <p>
+        This relationship captures the main drivers of human-induced global
+        warming, which can be written as an approximate first-order equation:
+      </p>
 
       <div class="equation-container">
-        \[ {\color{red} {\Delta T}} = {\color{blue}\kappa} \cdot \left( E +
-        \frac{{\color{grey} {\Delta F}}}{{\color{blue}\alpha}} \right) \]
+        \[
+          {\color{var(--color-plot-anthropogenic)} {\Delta T}}
+          = 
+          {\color{black} \kappa_E } \cdot
+          
+          <!-- \left( -->
+          
+          {\color{var(--color-plot-co2)} E}
+          
+          +
+          
+          <!-- \frac{{\color{black} \kappa_F}}{{\color{black} \kappa_E }} -->
+          
+          {\color{black} \kappa_F } \cdot
+          {\color{var(--color-plot-non-co2)} {\Delta F}}
+          
+          <!-- \right) -->
+        \]
       </div>
 
       <p>
-        where <span class="text-blue"><i>&kappa;</i></span> is the “Transient
-        Climate Response to Emissions” (about 0.4°C per trillion tonnes of
-        CO<sub>2</sub> [2]) and <span class="text-blue"><i>&alpha;</i></span> is
-        the “Normalised Absolute Global Warming Potential” of CO<sub>2</sub>
-        (about 1.0 W/m<sup>2</sup> per trillion tonnes of CO<sub>2</sub>
-        [3]).
+        where
+      <ul>  
+
+        <li>
+          <em>\( \kappa_E \)</em> is the
+          "Transient Climate Response to Emissions",
+          about 0.45 (±0.18) °C per trillion tonnes of CO<sub>2</sub>
+          <span class="citation">
+            (Arias et al., 2021: Technical Summary in IPCC AR6 WGI)
+          </span>.
+          <!-- <ul>
+            <li>
+              Note that this is different from the more commonly used
+              "Transient Climate Response" (TCR), which is defined as the
+              GMT at the point when CO<sub>2</sub> concentration reaches double
+              its pre-industrial level, for a specific scenario of
+              CO<sub>2</sub> increase (1% per year).
+            </li>
+          </ul> -->
+        </li>
+        <li>
+          <em>\( \kappa_F \)</em> is the
+          "Transient Climate Response to Forcing",
+          about 0.42 (±0.10)°C per W/m<sup>2</sup>
+          <span class="citation">
+            (Allen et al., 2022: Net Zero Science, Origins, and Implications)
+          </span>.
+          <!-- <ul>
+            <li>
+              Note that <em>\( \frac{\kappa_F}{\kappa_E}\)</em> can also be
+              written as <em>\( \frac{\text{H}}{\text{AGWP}_{\text{CO}_2}} \)</em>,
+              where the demominator is the
+              "Normalised Absolute Global Warming Potential" of CO<sub>2</sub>,
+              about 1.0 W/m<sup>2</sup> per trillion tonnes of CO<sub>2</sub>
+            </li>
+          </ul> -->
+        </li>
+      </ul>
+      </p>
+      
+      <p>
+        While the full scientific calculation of the Global Warming Index
+        involves more accurate calculations, this simple equation is a good
+        approximation of the main drivers of human-induced global warming.
       </p>
 
-      <p>
-        <strong
-          >The Global Warming Index is run by researchers from the
-          <a href="https://www.eci.ox.ac.uk/research/climate/index.html"
-            >Environmental Change Institute</a
-          >
-          at the University of Oxford.</strong
-        >
-      </p>
 
       <div class="references">
-        <p>
+        <!-- <p>
           [1] Allen et al, <i>npj Clim Atmos Sci</i> <b>1</b>, 16 (2018)<br />
           [2] Myhre et al (2013) in IPCC 5th Assessment Report, incl.
           uncertainty range of 0.23-0.68°C/TtCO<sub>2.</sub><br />
@@ -209,13 +340,32 @@
           >/<i>H</i>, where <i>H</i> is the AGWP time-horizon. Myhre et al
           (2013) give values of 0.9-1.2 W/m<sup>2</sup> per trillion tonnes of
           CO<sub>2</sub> in the 20-100 yr range.
-        </p>
+        </p> -->
       </div>
+
+      <p>
+        <a href="info_page.html">See here</a> for further details about the
+        numbers, graphics, and methods used above, and an animation showing
+        how the GWI attribution method works.
+      </p>      
+
     </main>
 
     <footer>
-      <p>Source: IPCC (2013)</p>
-      <p>Design: Christopher Leedham &amp; Myles Allen</p>
+      
+      <p>
+        <strong
+          >The Global Warming Index is run by researchers from the
+          <a href="https://www.eci.ox.ac.uk/research/climate"
+            >Environmental Change Institute</a
+          >
+          at the University of Oxford.</strong
+        >
+      </p>
+
+      <p>Source: IPCC AR6 (2021), IGCC (2025)</p>
+      <p>Design: Christopher Leedham, Myles Allen, Tristram Walsh</p>
+    
     </footer>
 
     <!-- Scripts -->
