@@ -284,40 +284,6 @@ li {
   border-radius: 3px;
 }
 
-/* Legacy Utility Classes (Deprecated) */
-.text-blue {
-  color: var(--color-accent-blue);
-  background-color: color-mix(in srgb, var(--color-accent-blue) 20%, transparent);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-}
-.text-orange {
-  color: var(--color-accent-orange);
-  background-color: color-mix(in srgb, var(--color-accent-orange) 20%, transparent);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-}
-.text-purple {
-  color: var(--color-accent-purple);
-  background-color: color-mix(in srgb, var(--color-accent-purple) 20%, transparent);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-}
-.text-red {
-  color: var(--color-accent-red);
-  background-color: color-mix(in srgb, var(--color-accent-red) 20%, transparent);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-}
-.text-grey {
-  color: var(--color-accent-grey);
-  background-color: color-mix(in srgb, var(--color-accent-grey) 20%, transparent);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-}
-.text-dark-grey {
-  color: #333;
-}
 
 .references {
   font-size: 0.9rem;
