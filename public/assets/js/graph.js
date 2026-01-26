@@ -196,7 +196,7 @@
     // HadCRUT Error Bars
     // Floating bars: [min, max]
     datasets.push({
-      label: "Observations Error",
+      label: "Observations Range",
       data: hadcrutData.years.map((y, i) => ({
         x: y,
         y: [hadcrutData.p5[i], hadcrutData.p95[i]],
@@ -301,57 +301,8 @@
           legend: {
             position: "bottom",
             onClick: function (e, legendItem, legend) {
-              const chart = legend.chart;
-              const clickedLabel =
-                chart.data.datasets[legendItem.datasetIndex].label;
-              const datasets = chart.data.datasets;
-
-              // Find all related datasets for the clicked category
-              const indicesToToggle = [];
-              datasets.forEach((ds, idx) => {
-                const label = ds.label;
-
-                if (
-                  clickedLabel === "Observations" &&
-                  label.startsWith("Observations")
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Natural" &&
-                  (label === "Natural" || label.startsWith("Natural "))
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Human-induced" &&
-                  (label === "Human-induced" ||
-                    label.startsWith("Human-induced "))
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Combined response" &&
-                  (label === "Combined response" ||
-                    label.startsWith("Combined response "))
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Internal Variability" &&
-                  (label === "Internal Variability" ||
-                    label.startsWith("Internal Variability "))
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (label === clickedLabel) {
-                  indicesToToggle.push(idx);
-                }
-              });
-
-              // Toggle all related datasets
-              indicesToToggle.forEach((idx) => {
-                const meta = chart.getDatasetMeta(idx);
-                meta.hidden =
-                  meta.hidden === null ? !datasets[idx].hidden : null;
-              });
-
-              chart.update();
+              const { handleLegendClick } = window.GWIUtils;
+              handleLegendClick(e, legendItem, legend);
             },
             labels: {
               usePointStyle: true,
@@ -359,8 +310,8 @@
               boxWidth: 10,
               boxHeight: 10,
               filter: function (item, chart) {
-                // Hide 95%, 5% and Error bars from legend
-                return !item.text.includes("%") && !item.text.includes("Error");
+                // Hide 95%, 5% and Range bars from legend
+                return !item.text.includes("%") && !item.text.includes("Range");
               },
             },
           },

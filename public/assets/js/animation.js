@@ -361,6 +361,10 @@
         plugins: {
           legend: {
             position: "bottom",
+            onClick: function (e, legendItem, legend) {
+              const { handleLegendClick } = window.GWIUtils;
+              handleLegendClick(e, legendItem, legend);
+            },
             labels: {
               usePointStyle: true,
               pointStyle: "rect",

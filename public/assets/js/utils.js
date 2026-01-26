@@ -397,6 +397,63 @@
   }
 
   // ============================================
+  // CHART INTERACTION UTILITIES
+  // ============================================
+
+  /**
+   * Centralized legend onClick handler for toggling related datasets.
+   * Handles the standard GWI pattern where a primary dataset has associated
+   * uncertainty ranges (5%, 95%) or other related datasets.
+   *
+   * @param {Object} e - The click event
+   * @param {Object} legendItem - The clicked legend item
+   * @param {Object} legend - The legend instance
+   * @param {Function} [customMatcher] - Optional function(clickedLabel, currentDatasetLabel) -> boolean
+   */
+  function handleLegendClick(e, legendItem, legend, customMatcher) {
+    const chart = legend.chart;
+    const clickedLabel = chart.data.datasets[legendItem.datasetIndex].label;
+    const datasets = chart.data.datasets;
+
+    const indicesToToggle = [];
+    datasets.forEach((ds, idx) => {
+      const label = ds.label;
+      let match = false;
+
+      if (customMatcher) {
+        match = customMatcher(clickedLabel, label);
+      }
+      
+      // Default GWI matching logic if no custom matcher or if it returns false (additive)
+      if (!match) {
+        // Exact match
+        if (label === clickedLabel) {
+          match = true;
+        }
+        // Standard suffixes
+        else if (
+          label === clickedLabel + " 5%" ||
+          label === clickedLabel + " 95%" ||
+          label === clickedLabel + " Range"
+        ) {
+          match = true;
+        }
+      }
+
+      if (match) {
+        indicesToToggle.push(idx);
+      }
+    });
+
+    indicesToToggle.forEach((idx) => {
+      const meta = chart.getDatasetMeta(idx);
+      meta.hidden = meta.hidden === null ? !datasets[idx].hidden : null;
+    });
+
+    chart.update();
+  }
+
+  // ============================================
   // CHART.JS TOOLTIP POSITIONER
   // ============================================
 
@@ -444,6 +501,9 @@
     // Chart.js plugins
     verticalHoverLinePlugin: verticalHoverLinePlugin,
     createLogoPlugin: createLogoPlugin,
+
+    // Chart interaction utilities
+    handleLegendClick: handleLegendClick,
 
     // Re-register tooltip positioner (for dynamic Chart.js loading)
     registerTooltipPositioner: registerTooltipPositioner,
