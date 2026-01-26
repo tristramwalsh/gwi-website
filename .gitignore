@@ -17,6 +17,9 @@ public/assets/data/current_climate_state.json
 public/assets/data/current_erf_state.json
 public/assets/data/current_emissions_state.json
 
+# Latest commit
+public/assets/data/last_updated.txt
+
 # Agents
 .project_details/
 conductor/
