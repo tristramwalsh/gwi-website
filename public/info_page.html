@@ -24,7 +24,7 @@
 
       <p>
         The
-        <span class="text-anthropogenic">Global Warming Index</span>
+        <strong>Global Warming Index</strong>
         attribution method estimates contributions to
         observed warming by separating out the contributions from various
         human-induced and natural forcing drivers of climate change, and natural year-to-year fluctuations known as
@@ -92,108 +92,78 @@
       <p>
 
       The attribution method separates the warming contributions through a
-      series of simple steps:
-      <ol>
-        <li>
-          <strong>Aggregate emissions and effective radiative forcings data:</strong>
-          Collect latest updated timeseries for all climate drivers (forcings),
-          including all natural and anthropogenic sources
-          <span class="citation">
-            [IGCC 2025, following IPCC AR6 WGI Ch.7 method]
-          </span>.
-          The individual forcings are aggregated into three groups:
-          <ul>
-            <li>
-              <span class="text-natural">Natural forcings</span> forcings:
-              solar and volcanic activity
-            </li>
-            <li>
-              <span class="text-ghg">Greenhouse Gas forcings</span> forcings:
-              CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O, and F-gases
-            </li>
-            <li>
-              <span class="text-ohf">Other human forcings</span>:
-              aerosol radiation interaction, aerosol-cloud interaction,
-              black carbon on snow, contrails, ozone,
-              stratospheric H<sub>2</sub>O, and
-              land use change
-            </li>
-          </ul>
-        <li>
-          <strong>Estimate temperature response using simple model:</strong>
-          A simple climate model that is commonly used in the IPCC
-          <span class="citation">
-            [FaIR v2.0 (Leach et al., 2021)]
-          </span>
-          is used to convert the forcing timeseries into initial
-          estimates of the temperature response for each component.
+      series of simple steps (labelled correponding to the animation below):
+  
+      <p>
+        <strong>
+          Step 1: Aggregate emissions and effective radiative forcings data:
+        </strong>
+        Collect latest updated timeseries for all climate drivers (forcings),
+        including all natural and anthropogenic sources
+        <span class="citation">
+          [IGCC 2025, following IPCC AR6 WGI Ch.7 method]
+        </span>.
+        The individual forcings are aggregated into three main components:
+        <span class="text-natural">natural forcings</span>,
+        <span class="text-ghg">greenhouse gas forcings</span>, and
+        <span class="text-ohf">other human forcings</span> (see above).
+      </p>
+      <p>
+        <strong>
+          Step 2: Estimate temperature response using simple model:
+        </strong>
+        A simple climate model that is commonly used in the IPCC
+        <span class="citation">[FaIR v2.0 (Leach et al., 2021)]</span>
+        is used to convert the forcing timeseries into initial
+        estimates of the temperature response for each component.
 
-          Warming is defined relative to the standard 1850-1900 baseline, but
-          but can be simply re-calculated for any baseline as needed.
-          
-        </li>
-        <li>
-          <strong>Combine components:</strong>
-          Sums are performed to combine the different warming contributions:
-          <ul>
-            <li>
-              <span class="text-anthropogenic">Human-induced</span>
-              =
-              <span class="text-ghg">greenhouse gas</span> +
-              <span class="text-ohf">other human forcings</span>
-            </li>
-            <li>
-              <span class="text-total">Total forced warming</span>
-              =
-              <span class="text-anthropogenic">human-induced</span> +
-              <span class="text-natural">natural</span>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <strong>Compare total forced warming to observations:</strong>
-          The estimated total forced warming is compared to observed global mean
-          surface temperature data.
-          <ul>
-            <li>
-              <span class="text-residual">Residual</span> =
-              <span class="text-obs">observed</span> –
-              <span class="text-total">total forced warming</span>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <strong>Scale forced warming to best match observations:</strong>
-          A simple least-squares fit is performed between the estimated total
-          forced warming and:
-          <ol>
-            <li>
-              realised global mean surface temperature from observations, and
-            </li>
-            <li>
-              alternative possible internal variability realisations from models
-            </li>
-          </ol>
-          
-          These additional constraints are used to scale each of the estimated
-          forced warming components, improving their accuracy and precision.
-          This process adjusts the warming estimates for all components
-          in order optimise the fit between modelled and real-world warming.
-          
-          Note: the optimisation removes any spurious contribution from forced
-          warming from the residual, so we interpret the optimised residual as
-          the
-          <span class="text-residual">internal variability</span>.
-          
-        </li>
-        <li>
-          <strong>Extract Global Warming Index:</strong>
-          The resulting index shows the best estimate of human-induced warming
-          along with the 5-95% uncertainty range due to the combined uncertainties
-          from forcings, observations, climate response and internal variability.
+        Warming is defined relative to the standard 1850-1900 baseline, but
+        but can be simply re-calculated for any baseline as needed.
+        
+      </p>
+      <p>
+        <strong>
+          Step 3 & 4: Combine components and compare to observations:
+        </strong>
+        Sums are performed to combine the different warming contributions
+        to get the total forced warming estimates:
+        <span class="text-anthropogenic">human-induced</span>, and
+        <span class="text-total">total forced warming</span>.
 
-        </li>
-      </ol>
+        The estimated total forced warming is compared to
+        <span class="text-obs">observed</span> global mean
+        surface temperature data, with the difference between the two
+        defined as the
+        <span class="text-residual">residual</span>.
+      </p>
+      <p>
+        <strong>Step 5: Constrain forced warming estimates:</strong>
+        A simple least-squares fit is used to constrain the estimated forced
+        warming components to best match observations, and account for
+        alternative possible realisations of internal variability.
+        
+        These additional constraints allow us to scale each of the estimated
+        forced warming components, improving both the accuracy and precision
+        for each component. This is why the uncertainty ranges narrow
+        significantly between steps 4 and 5 below.
+
+        This optimisation also effectively removes any signal from forced
+        warming from the residual which therefore represents the remaining
+        internal variability in the observations that cannot be explained by
+        the forced response.
+        
+      </p>
+      <p>
+        <strong>Step 6: Extract Global Warming Index:</strong>
+        While the full breakdown of contributions to observed warming is
+        available via this method, the
+        <strong>Global Warming Index</strong> focuses on the
+        <span class="text-anthropogenic">human-induced warming</span>
+        component as the key metric of interest for tracking progress towards
+        international climate goals.
+
+      </p>
+      
       
       <p>
         <strong>Uncertainty:</strong>
@@ -221,13 +191,38 @@
         CMIP6
         </a>
         pre-industrial control simulations).
+        
+        Calculating any one of the above steps for a single member of this
+        ensemble is computationally inexpensive, but the full uncertainty
+        analysis requires repeating the full calculation for all combinations
+        for an extremely large Monta Carlo ensemble containing hundreds of
+        millions of members, and therefore is only possible through the use of
+        high-performance computing clusters.
+
       </p>
 
       <p>
+        <strong>
+          Generalisation
+        </strong>
+      The simplicity of the method, and use of the FaIR climate model, means
+      that the method has been generalised to calculate warming contributions
+      from any arbitrary combination of climate drivers,
+      constrained for any time period,
+      relative to any baseline,
+      applying any definition of warming period,
+      using any observation datasets,
+      and for any alternative scenarios of historical and future forcings.
+      Please get in touch with the authors if you are interested in
+      applying the method in this way.
+      </p>
+
+
+      <p>
         The following animation steps through the calculation of the Global
-        Warming Index, showing how the different components are combined to
-        produce the final result. For simplicity, the 5-95% uncertainty plumes
-        are shown for every step of the process.
+        Warming Index, showing how the different datasets and methods are
+        combined to produce the final result. For simplicity, the 5-95%
+        uncertainty plumes are shown for every step of the process.
       </p>
       
         
@@ -292,7 +287,10 @@
         <a href="https://www.nature.com/articles/s41598-017-14828-5"
           >Haustein et al. (2017)</a>,
         and work extending the robustness and utility of the Index is
-        ongoing.
+        <a href="https://github.com/tristramwalsh/global-warming-index">
+          ongoing
+        </a>
+        .
       </p>
       <p>
         The Global Warming Index is been used extensively in the IPCC
@@ -314,9 +312,16 @@
         <a href="https://github.com/tristramwalsh/global-warming-index/">
           active scientific development and maintenance
         </a>
-        by researchers from the Environmental Change Institute at the
-        University of Oxford, UK, who provide systematic operarational annual
-        updates of the data and methodology.
+        by researchers from the
+        <a href="https://www.eci.ox.ac.uk/">
+        Environmental Change Institute
+        </a>
+        at the
+        <a href="https://www.ox.ac.uk/climate">
+        University of Oxford
+        </a>
+        , UK, who provide systematic operarational annual
+        updates of the datasets and methodology.
       </p>
       <p>
         These latest GWI datasets are peer reviewed and published as
@@ -327,10 +332,7 @@
         initiative global annual climate assessments, which are released for
         policymakers at the yearly UNFCCC Bonn meetings. These assessments 
         have additionally been presented at the annual UNFCCC COP conferences,
-        and included in the
-        <a href="https://library.wmo.int/records/item/69455-state-of-the-global-climate-2024">
-          WMO State of the Climate Report
-        </a>.
+        and included in the WMO State of the Climate Report.
         </p>
         <p>
         The GWI is now widely used by policymakers, scientists, and climate
@@ -348,7 +350,7 @@
       <h3>Usage of the GWI Data</h3>
       <p>
         To use the Global Warming Index data in publications, we kindly ask you
-        to cite the following papers.
+        to cite the following papers as appropriate:
         <ul>
           <li>
             Forster et al. (2025) (the most recent published dataset paper)
@@ -357,10 +359,13 @@
             Haustein et al. (2017) (the most recent published methodology
             paper)
           </li>
+          <li>
+            Otto et al. (2015) (the paper proposing the GWI for policy use)
+          </li>
         </ul>
       </p>
       
-      <h3>Relevant Papers</h3>
+      <h3>Full List of Relevant Papers</h3>
 
       <ul class="biblio-list">
         <li>
