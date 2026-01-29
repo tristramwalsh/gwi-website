@@ -59,6 +59,22 @@
         if (chart) {
              log(`  - Chart Instance: FOUND`);
              log(`  - Chart Data: ${chart.data.datasets.length} datasets`);
+             
+             // Check first visible dataset
+             const firstDS = chart.data.datasets.find(d => !d.hidden && d.data.length > 0);
+             if (firstDS) {
+                 const sample = firstDS.data[0];
+                 log(`  - Sample Data (${firstDS.label}): ${JSON.stringify(sample)}`);
+             } else {
+                 log(`  - No visible data found!`);
+             }
+
+             // Check Scales
+             const yScale = chart.scales['y'];
+             if (yScale) {
+                 log(`  - Y-Scale: min=${yScale.min}, max=${yScale.max}`);
+             }
+
         } else {
              log(`  - Chart Instance: NOT FOUND`);
         }

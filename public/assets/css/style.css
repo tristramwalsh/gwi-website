@@ -190,6 +190,11 @@ header {
   height: 500px;
 }
 
+.paper .chart-area canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .text-center {
   text-align: center;
 }
