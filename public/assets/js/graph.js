@@ -85,8 +85,6 @@
     const colorObsErr = style.getPropertyValue("--color-plot-obs-err").trim();
     const colorRes = style.getPropertyValue("--color-plot-residual").trim();
 
-    console.log(`Graph Init Colors: Nat=${colorNat}, Ant=${colorAnt}`);
-
     addDatasets("Natural", colorNat, gwiData.Nat, true);
     addDatasets("Human-induced", colorAnt, gwiData.Ant, true);
     addDatasets("Combined response", colorTot, gwiData.Tot, false);

@@ -253,8 +253,6 @@
       0.2, // Half of original 0.4
     );
 
-    console.log(`Forcings Init Colors: Anthro=${colorAnthro}, CO2=${colorCO2Base}`);
-
     // Prepare Data for Chart.js
 
     // 1. CO2 (Bottom Area)
