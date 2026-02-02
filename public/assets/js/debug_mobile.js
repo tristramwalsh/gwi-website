@@ -57,6 +57,11 @@
     logDiv.scrollTop = logDiv.scrollHeight;
   }
 
+  window.onerror = function(msg, url, line, col, error) {
+    log(`GLOBAL ERROR: ${msg} at ${line}:${col}`);
+    return false;
+  };
+
   log('Debug script loaded');
 
   window.addEventListener('load', () => {
@@ -82,6 +87,9 @@
       const rootStyle = window.getComputedStyle(document.documentElement);
       const testColor = rootStyle.getPropertyValue('--color-plot-natural').trim();
       log(`  - CSS Var (--color-plot-natural): "${testColor}"`);
+
+      // Add a red border to verify visibility
+      canvas.style.border = '2px solid red';
 
       if (typeof Chart !== 'undefined') {
         const chart = Chart.getChart(id);

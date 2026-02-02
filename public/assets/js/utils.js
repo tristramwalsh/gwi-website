@@ -309,21 +309,25 @@
   const verticalHoverLinePlugin = {
     id: "verticalHoverLine",
     beforeDraw: (chart) => {
-      if (chart.tooltip._active && chart.tooltip._active.length) {
-        const ctx = chart.ctx;
-        ctx.save();
-        const activePoint = chart.tooltip._active[0];
-        const x = activePoint.element.x;
-        const topY = chart.chartArea.top;
-        const bottomY = chart.chartArea.bottom;
+      try {
+        if (chart.tooltip._active && chart.tooltip._active.length) {
+          const ctx = chart.ctx;
+          ctx.save();
+          const activePoint = chart.tooltip._active[0];
+          const x = activePoint.element.x;
+          const topY = chart.chartArea.top;
+          const bottomY = chart.chartArea.bottom;
 
-        ctx.beginPath();
-        ctx.moveTo(x, topY);
-        ctx.lineTo(x, bottomY);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "rgba(0,0,0,0.1)";
-        ctx.stroke();
-        ctx.restore();
+          ctx.beginPath();
+          ctx.moveTo(x, topY);
+          ctx.lineTo(x, bottomY);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = "rgba(0,0,0,0.1)";
+          ctx.stroke();
+          ctx.restore();
+        }
+      } catch (e) {
+        console.error("Vertical Hover Plugin Error:", e);
       }
     },
   };
@@ -350,46 +354,50 @@
     return {
       id: "logoPlugin",
       afterDraw: (chart) => {
-        if (logoImg.complete && logoImg.naturalHeight !== 0) {
-          const ctx = chart.ctx;
-          const { chartArea } = chart;
-          let xPos, yPos, w, h;
+        try {
+          if (logoImg.complete && logoImg.naturalHeight !== 0) {
+            const ctx = chart.ctx;
+            const { chartArea } = chart;
+            let xPos, yPos, w, h;
 
-          if (position === "top-left") {
-            const chartHeight = chartArea.bottom - chartArea.top;
-            const heightFactor = options.heightFactor || 0.15;
-            h = chartHeight * heightFactor;
-            
-            const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
-            w = h * aspectRatio;
+            if (position === "top-left") {
+              const chartHeight = chartArea.bottom - chartArea.top;
+              const heightFactor = options.heightFactor || 0.15;
+              h = chartHeight * heightFactor;
+              
+              const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
+              w = h * aspectRatio;
 
-            xPos = chartArea.left + padding;
-            yPos = chartArea.top + padding;
-          } else {
-            // Default: bottom-right band logic
-            const yAxis = chart.scales.y;
-            // Ensure yAxis exists
-            if (!yAxis) return;
+              xPos = chartArea.left + padding;
+              yPos = chartArea.top + padding;
+            } else {
+              // Default: bottom-right band logic
+              const yAxis = chart.scales.y;
+              // Ensure yAxis exists
+              if (!yAxis) return;
 
-            const yZero = yAxis.getPixelForValue(0);
-            const yBottom = yAxis.getPixelForValue(bottomValue);
-            const bandHeight = Math.abs(yBottom - yZero);
+              const yZero = yAxis.getPixelForValue(0);
+              const yBottom = yAxis.getPixelForValue(bottomValue);
+              const bandHeight = Math.abs(yBottom - yZero);
 
-            h = bandHeight - 2 * padding;
+              h = bandHeight - 2 * padding;
 
-            if (h <= 0) return;
+              if (h <= 0) return;
 
-            const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
-            w = h * aspectRatio;
+              const aspectRatio = logoImg.naturalWidth / logoImg.naturalHeight;
+              w = h * aspectRatio;
 
-            xPos = chartArea.right - w - padding;
-            const yMid = (yZero + yBottom) / 2;
-            yPos = yMid - h / 2;
+              xPos = chartArea.right - w - padding;
+              const yMid = (yZero + yBottom) / 2;
+              yPos = yMid - h / 2;
+            }
+
+            ctx.save();
+            ctx.drawImage(logoImg, xPos, yPos, w, h);
+            ctx.restore();
           }
-
-          ctx.save();
-          ctx.drawImage(logoImg, xPos, yPos, w, h);
-          ctx.restore();
+        } catch (e) {
+          console.error("Logo Plugin Error:", e);
         }
       },
       getImage: () => logoImg,

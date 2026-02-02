@@ -384,6 +384,10 @@ svg {
   .paper .chart-area {
     height: 350px !important; /* Force smaller height on mobile */
   }
+
+  .paper .chart-area canvas {
+    min-height: 350px;
+  }
 }
 
 /* Timeline Styles */
