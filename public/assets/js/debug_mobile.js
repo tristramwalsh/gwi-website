@@ -79,6 +79,10 @@
       log(`Canvas #${id}: ${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`);
       log(`  - Style: vis=${computedStyle.visibility}, disp=${computedStyle.display}`);
 
+      const rootStyle = window.getComputedStyle(document.documentElement);
+      const testColor = rootStyle.getPropertyValue('--color-plot-natural').trim();
+      log(`  - CSS Var (--color-plot-natural): "${testColor}"`);
+
       if (typeof Chart !== 'undefined') {
         const chart = Chart.getChart(id);
         if (chart) {
