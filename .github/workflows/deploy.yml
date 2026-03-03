@@ -3,7 +3,7 @@ name: Deploy Static Site to GitHub Pages
 on:
   push:
     branches:
-      - development
+      - live
   workflow_dispatch:
 
 permissions:
