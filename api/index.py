@@ -5,6 +5,7 @@ import time
 import json
 import os
 import datetime
+import requests
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = False
@@ -16,29 +17,35 @@ DATA_FILE_PATH = '/var/www/html/assets/data/current_climate_state.json'
 def get_current_climate_data():
     """Reads the climate data from the JSON file."""
     try:
-        # In development/local environment the path might differ, handling
-        # relative path fallback
-        if not os.path.exists(DATA_FILE_PATH):
-            # Fallback for local testing if not in Docker container structure
-            # Assuming api/temp_api.py is in 'api/' and public assets in
-            # 'public/'
-            relative_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                '../public/assets/data/current_climate_state.json')
-            if os.path.exists(relative_path):
-                with open(relative_path, 'r') as f:
-                    return json.load(f)
-            else:
-                return None
+        # 1. Try absolute Docker path
+        if os.path.exists(DATA_FILE_PATH):
+            with open(DATA_FILE_PATH, 'r') as f:
+                return json.load(f)
 
-        with open(DATA_FILE_PATH, 'r') as f:
-            return json.load(f)
+        # 2. Try relative path (local dev or alternative Docker setup)
+        relative_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '../public/assets/data/current_climate_state.json')
+        if os.path.exists(relative_path):
+            with open(relative_path, 'r') as f:
+                return json.load(f)
+
+        # 3. Fallback for serverless environments (like Vercel)
+        # Fetch dynamically from the same domain's static assets
+        json_url = flask.request.host_url.rstrip('/') + '/assets/data/current_climate_state.json'
+        resp = requests.get(json_url, timeout=5)
+        if resp.status_code == 200:
+            return resp.json()
+
+        print(f"Failed to fetch JSON from {json_url} (Status: {resp.status_code})")
+        return None
+
     except Exception as e:
         print(f"Error reading climate data: {e}")
         return None
 
 
-@app.route('/')
+@app.route('/api')
 def api_all():
     data = get_current_climate_data()
 
