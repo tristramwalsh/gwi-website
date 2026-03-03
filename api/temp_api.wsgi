@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, '/var/www/html/api')
 
-from temp_api import app
+from index import app
 
 #Initialize WSGI app object
 application = app
