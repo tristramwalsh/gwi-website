@@ -195,6 +195,25 @@ header {
   display: block;
 }
 
+.btn-download {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background: transparent;
+  border: 1px solid var(--color-text-muted);
+  color: var(--color-text-muted);
+  font-family: var(--font-base);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-download:hover {
+  background: var(--color-white);
+  color: var(--color-text);
+}
+
 .text-center {
   text-align: center;
 }
