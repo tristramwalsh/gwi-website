@@ -169,10 +169,12 @@
    *   Row 1+: Data rows
    *
    * @param {string} csvText - Raw CSV text content
+   * @param {Object} [options] - Configuration options
+   * @param {number} [options.maxYear] - Drop years after this (e.g. a partial current year)
    * @returns {{ years: number[], p5: number[], p50: number[], p95: number[] }}
    * @throws {Error} If "Realization 1" column cannot be found
    */
-  function parseHadcrutData(csvText) {
+  function parseHadcrutData(csvText, options = {}) {
     const lines = csvText.split("\n").filter((l) => l.trim() !== "");
     const header = lines[0].split(",");
 
@@ -215,6 +217,7 @@
 
       const year = cols[0];
       if (isNaN(year) || year < CONFIG.BASELINE_PERIOD_START) return;
+      if (options.maxYear !== undefined && year > options.maxYear) return;
 
       const vals = cols
         .slice(realizationStartIdx, realizationStartIdx + numRealizations)
@@ -246,6 +249,20 @@
       p50: yearlyRawPercentiles.map((d) => d.p50 - baseline),
       p95: yearlyRawPercentiles.map((d) => d.p95 - baseline),
     };
+  }
+
+  /**
+   * Fetch the HadCRUT5 CSV text. The filename (which includes the HadCRUT
+   * version) is looked up from data_manifest.json, generated at build time
+   * by scripts/process_data.py.
+   *
+   * @returns {Promise<string>} Raw CSV text content
+   */
+  function fetchHadcrutCsv() {
+    return fetch("assets/data/data_manifest.json")
+      .then((r) => r.json())
+      .then((manifest) => fetch(manifest.hadcrut))
+      .then((r) => r.text());
   }
 
   /**
@@ -505,6 +522,7 @@
     buildColumnMap: buildColumnMap,
     parseHadcrutData: parseHadcrutData,
     parseGwiData: parseGwiData,
+    fetchHadcrutCsv: fetchHadcrutCsv,
 
     // Chart.js plugins
     verticalHoverLinePlugin: verticalHoverLinePlugin,

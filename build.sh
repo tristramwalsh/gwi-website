@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Generate the current status JSON from source CSVs
 echo "Processing data..."

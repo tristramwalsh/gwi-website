@@ -1,4 +1,5 @@
 import csv
+import glob
 import json
 import os
 import sys
@@ -181,6 +182,25 @@ def process_emissions():
         json.dump(output, f, indent=4)
     print(f"Generated {output_file}")
 
+
+def process_manifest():
+    """Records the HadCRUT filename so the frontend needn't hardcode its
+    version number. Fails if there isn't exactly one HadCRUT file."""
+    data_dir = "public/assets/data"
+    output_file = os.path.join(data_dir, "data_manifest.json")
+
+    matches = sorted(glob.glob(os.path.join(data_dir, "temp", "HadCRUT*.csv")))
+    if len(matches) != 1:
+        sys.exit(f"Expected exactly one HadCRUT CSV in {data_dir}/temp, "
+                 f"found {len(matches)}: {matches}")
+
+    output = {
+        "hadcrut": os.path.relpath(matches[0], "public")
+    }
+    with open(output_file, 'w') as f:
+        json.dump(output, f, indent=4)
+    print(f"Generated {output_file}")
+
 # ------------------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------------------
@@ -191,4 +211,5 @@ if __name__ == "__main__":
     process_gwi_warming()
     process_erf()
     process_emissions()
+    process_manifest()
     print("Success.")

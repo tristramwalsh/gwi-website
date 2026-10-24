@@ -87,9 +87,7 @@
       fetch("assets/data/erf/erf_timeseries.csv").then((r) => r.text()),
       fetch("assets/data/priors/priors_timeseries.csv").then((r) => r.text()),
       fetch("assets/data/gwi/gwi_timeseries.csv").then((r) => r.text()),
-      fetch(
-        "assets/data/temp/HadCRUT.5.0.2.0.analysis.ensemble_series.global.annual.csv",
-      ).then((r) => r.text()),
+      window.GWIUtils.fetchHadcrutCsv(),
     ])
       .then(([erf, priors, gwi, hadcrut]) => {
         state.erf = window.GWIUtils.parseGwiData(erf, {
@@ -104,7 +102,10 @@
           requiredVars: ["Ant", "GHG", "Nat", "OHF", "Tot", "Res"],
           minYear: BASELINE_PERIOD_START,
         });
-        state.hadcrut = window.GWIUtils.parseHadcrutData(hadcrut);
+        // Truncate to the GWI end year to drop any partial current year
+        state.hadcrut = window.GWIUtils.parseHadcrutData(hadcrut, {
+          maxYear: state.gwi.years[state.gwi.years.length - 1],
+        });
 
         // Calculate Prior Residual: Observations - Prior Tot
         state.priors.Res = { p5: [], p50: [], p95: [] };

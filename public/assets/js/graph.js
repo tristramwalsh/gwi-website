@@ -1,6 +1,6 @@
 (function () {
   // Import shared utilities
-  const { CONFIG, withAlpha, parseGwiData, parseHadcrutData, verticalHoverLinePlugin, createLogoPlugin } = window.GWIUtils;
+  const { CONFIG, withAlpha, parseGwiData, parseHadcrutData, fetchHadcrutCsv, verticalHoverLinePlugin, createLogoPlugin } = window.GWIUtils;
   const BASELINE_PERIOD_START = CONFIG.BASELINE_PERIOD_START;
   const BASELINE_PERIOD_END = CONFIG.BASELINE_PERIOD_END;
 
@@ -10,14 +10,15 @@
       fetch("assets/data/gwi/gwi_timeseries.csv").then((response) =>
         response.text(),
       ),
-      fetch(
-        "assets/data/temp/HadCRUT.5.0.2.0.analysis.ensemble_series.global.annual.csv",
-      ).then((response) => response.text()),
+      fetchHadcrutCsv(),
     ])
       .then(([gwiText, hadcrutText]) => {
         const gwiData = parseGwiData(gwiText, { requiredVars: ["Nat", "Ant", "Tot", "Res"] });
-        // Use shared HadCRUT parser
-        const hadcrutData = parseHadcrutData(hadcrutText);
+        // Use shared HadCRUT parser, truncated to the GWI end year to drop
+        // any partial current year
+        const hadcrutData = parseHadcrutData(hadcrutText, {
+          maxYear: gwiData.years[gwiData.years.length - 1],
+        });
 
         plotGraph(gwiData, hadcrutData);
       })

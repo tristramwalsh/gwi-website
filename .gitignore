@@ -16,6 +16,7 @@ gwi.tar
 public/assets/data/current_climate_state.json
 public/assets/data/current_erf_state.json
 public/assets/data/current_emissions_state.json
+public/assets/data/data_manifest.json
 
 # Latest commit
 public/assets/data/last_updated.txt

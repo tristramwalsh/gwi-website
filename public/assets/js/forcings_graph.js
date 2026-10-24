@@ -1,8 +1,9 @@
 (function () {
   // Import shared utilities
-  const { CONFIG, calculatePercentile, withAlpha, verticalHoverLinePlugin, createLogoPlugin, parseGwiData, parseHadcrutData } = window.GWIUtils;
+  const { CONFIG, withAlpha, verticalHoverLinePlugin, createLogoPlugin, parseGwiData, parseHadcrutData, fetchHadcrutCsv } = window.GWIUtils;
   const BASELINE_PERIOD_START = CONFIG.BASELINE_PERIOD_START;
   const BASELINE_PERIOD_END = CONFIG.BASELINE_PERIOD_END;
+  const SECONDS_PER_YEAR = 365.2425 * 24 * 60 * 60;
 
   function init() {
     Promise.all([
@@ -11,18 +12,21 @@
       fetch("assets/data/emissions_co2/cumulative-co2-including-land.csv").then(
         (r) => r.text(),
       ),
-      fetch(
-        "assets/data/temp/HadCRUT.5.0.2.0.analysis.ensemble_series.global.annual.csv",
-      ).then((r) => r.text()),
+      fetchHadcrutCsv(),
+      // Emissions rate (as used by the live counter); optional, only needed
+      // to extrapolate if the emissions data ends before the GWI data
+      fetch("assets/data/current_emissions_state.json")
+        .then((r) => r.json())
+        .catch(() => null),
     ])
-      .then(([gwiText, erfText, co2Text, hadcrutText]) => {
-        const data = processData(gwiText, erfText, co2Text, hadcrutText);
+      .then(([gwiText, erfText, co2Text, hadcrutText, co2State]) => {
+        const data = processData(gwiText, erfText, co2Text, hadcrutText, co2State);
         plotGraph(data);
       })
       .catch((err) => window.GWIUtils.handleError("Forcings graph data loading", err));
   }
 
-  function processData(gwiText, erfText, co2Text, hadcrutText) {
+  function processData(gwiText, erfText, co2Text, hadcrutText, co2State) {
     // 1. GWI Parsing (Get Ant-50)
     // Use shared parser
     const gwiDataRaw = parseGwiData(gwiText, { requiredVars: ["Ant"] });
@@ -61,81 +65,55 @@
     // Find the value column (long name)
     const valIdx = co2Header.findIndex((h) => h.includes("Cumulative CO"));
 
+    const co2ByYear = new Map();
     const co2DataLines = co2Lines.slice(1);
     co2DataLines.forEach((line) => {
       const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // regex split for CSV
       if (parts[entityIdx] === "World") {
         const year = parseFloat(parts[yearIdx]);
-        const val = parseFloat(parts[valIdx]);
+        // Convert to Trillion Tonnes (TtCO2)
+        const val = parseFloat(parts[valIdx]) / 1e12;
+        co2ByYear.set(year, val);
         if (yearMap.has(year)) {
-          // Convert to Trillion Tonnes (TtCO2)
-          yearMap.get(year).co2 = val / 1e12;
+          yearMap.get(year).co2 = val;
         }
       }
     });
 
-    // 4. HadCRUT Parsing (Observed Temp)
-    const hadLines = hadcrutText.split("\n").filter((l) => l.trim());
-    const hadHeader = hadLines[0].split(",");
-    let realizationStartIdx = hadHeader.findIndex(
-      (h) => h.trim() === "Realization 1",
-    );
-    if (realizationStartIdx === -1) {
-      window.GWIUtils.handleError(
-        "HadCRUT Parsing",
-        "Could not find 'Realization 1' column in header",
-        true
-      );
-    }
-
-    // Dynamically determine number of realizations
-    const firstHadLine = hadLines[1];
-    let numRealizations = CONFIG.HADCRUT_REALIZATION_COUNT;
-    if (firstHadLine) {
-      const firstParts = firstHadLine.split(",");
-      numRealizations = firstParts.length - realizationStartIdx;
-    }
-
-    const hadData = { years: [], val: [], error_upper: [], error_lower: [] };
-
-    // Calculate baseline for BASELINE_PERIOD
-    let baselineSum = 0;
-    let baselineCount = 0;
-    const hadDataTemp = []; // Store temporarily to apply baseline later
-
-    hadLines.slice(1).forEach((line) => {
-      const parts = line.split(",");
-      const year = parseInt(parts[0]);
-      const realizations = parts
-        .slice(realizationStartIdx, realizationStartIdx + numRealizations)
-        .map((v) => parseFloat(v))
-        .sort((a, b) => a - b);
-
-      const p5 = calculatePercentile(realizations, 5);
-      const p50 = calculatePercentile(realizations, 50);
-      const p95 = calculatePercentile(realizations, 95);
-
-      if (year >= BASELINE_PERIOD_START && year <= BASELINE_PERIOD_END) {
-        baselineSum += p50;
-        baselineCount++;
+    // 3b. Extrapolate cumulative emissions for any GWI years beyond the end of
+    // the emissions data (emissions are reported with a lag). Uses the same
+    // rate as the live counter, falling back to the last annual increment.
+    const co2Extrapolated = new Set();
+    const lastCo2Year = Math.max(...co2ByYear.keys());
+    const lastCo2Val = co2ByYear.get(lastCo2Year);
+    const ratePerYear = co2State
+      ? (co2State.co2_emissions_rate_per_sec_tonnes * SECONDS_PER_YEAR) / 1e12
+      : lastCo2Val - co2ByYear.get(lastCo2Year - 1);
+    yearMap.forEach((d, year) => {
+      if (year > lastCo2Year && !isNaN(ratePerYear)) {
+        d.co2 = lastCo2Val + ratePerYear * (year - lastCo2Year);
+        co2Extrapolated.add(year);
       }
-      hadDataTemp.push({ year, p5, p50, p95 });
     });
 
-    const baseline = baselineCount > 0 ? baselineSum / baselineCount : 0;
-
-    hadDataTemp.forEach((d) => {
-      hadData.years.push(d.year);
-      hadData.val.push(d.p50 - baseline);
-      hadData.error_upper.push(d.p95 - baseline); // Absolute value for bar chart
-      hadData.error_lower.push(d.p5 - baseline); // Absolute value for bar chart
+    // 4. HadCRUT Parsing (Observed Temp), truncated to the GWI end year to
+    // drop any partial current year
+    const hadcrutRaw = parseHadcrutData(hadcrutText, {
+      maxYear: gwiDataRaw.years[gwiDataRaw.years.length - 1],
     });
+    const hadData = {
+      years: hadcrutRaw.years,
+      val: hadcrutRaw.p50,
+      error_upper: hadcrutRaw.p95, // Absolute value for bar chart
+      error_lower: hadcrutRaw.p5, // Absolute value for bar chart
+    };
 
     // consolidate final arrays for plotting
     const years = [];
     const ant = [];
     const co2 = [];
     const other = [];
+    const co2IsExtrapolated = [];
 
     // Iterate sorted years
     const sortedYears = Array.from(yearMap.keys()).sort((a, b) => a - b);
@@ -147,10 +125,11 @@
         ant.push(d.ant);
         co2.push(d.co2 || 0);
         other.push(d.otherForcing || 0);
+        co2IsExtrapolated.push(co2Extrapolated.has(y));
       }
     });
 
-    return { years, ant, co2, other, hadData };
+    return { years, ant, co2, other, co2IsExtrapolated, hadData };
   }
 
   function plotGraph(data) {
@@ -957,6 +936,13 @@
 
                 let value = context.parsed.y;
                 let str = label + ": " + value.toFixed(3);
+
+                if (
+                  label === "Cumulative CO₂ emissions" &&
+                  data.co2IsExtrapolated[context.dataIndex]
+                ) {
+                  str += " (extrapolated)";
+                }
 
                 if (label === "Annual observations") {
                   const errDS = context.chart.data.datasets.find(
