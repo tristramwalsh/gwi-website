@@ -43,16 +43,25 @@
 
     // 2. ERF Parsing (Get Ant-50 and co2-50 to calc "Other")
     const erfDataRaw = parseGwiData(erfText, { requiredVars: ["Ant", "co2"] });
-    
+
+    // The slow term integrates non-CO2 forcing over the whole ERF record, so
+    // sum over every ERF year, not just those that overlap the GWI data
+    let cumulativeOther = 0;
     erfDataRaw.years.forEach((year, i) => {
+      const ant = erfDataRaw.Ant.p50[i];
+      const co2 = erfDataRaw.co2.p50[i];
+      if (isNaN(ant) || isNaN(co2)) return;
+
+      // Other human forcings = Ant - co2
+      const other = ant - co2;
+      cumulativeOther += other;
       if (yearMap.has(year)) {
-        const ant = erfDataRaw.Ant.p50[i];
-        const co2 = erfDataRaw.co2.p50[i];
-        
-        // Other human forcings = Ant - co2
-        if (!isNaN(ant) && !isNaN(co2)) {
-          yearMap.get(year).otherForcing = ant - co2;
-        }
+        const d = yearMap.get(year);
+        // Fast response: Delta F_N
+        d.otherFast = other;
+        // Slow response: rho * integral of F_N dt (annual data, so dt = 1 yr),
+        // in W/m2 so that it shares the forcing axis with Delta F_N
+        d.otherSlow = CONFIG.RACF * cumulativeOther;
       }
     });
 
@@ -112,7 +121,8 @@
     const years = [];
     const ant = [];
     const co2 = [];
-    const other = [];
+    const otherFast = [];
+    const otherSlow = [];
     const co2IsExtrapolated = [];
 
     // Iterate sorted years
@@ -124,12 +134,13 @@
         years.push(y);
         ant.push(d.ant);
         co2.push(d.co2 || 0);
-        other.push(d.otherForcing || 0);
+        otherFast.push(d.otherFast || 0);
+        otherSlow.push(d.otherSlow || 0);
         co2IsExtrapolated.push(co2Extrapolated.has(y));
       }
     });
 
-    return { years, ant, co2, other, co2IsExtrapolated, hadData };
+    return { years, ant, co2, otherFast, otherSlow, co2IsExtrapolated, hadData };
   }
 
   function plotGraph(data) {
@@ -183,13 +194,21 @@
       return canvas;
     };
 
-    // Calculate Scaling Factor
-    const lastIdx = data.years.length - 1;
-    const lastAnt = data.ant[lastIdx];
-    const lastStack = data.co2[lastIdx] + data.other[lastIdx];
-
-    // 2. Calculate Scaling Ratio
-    const ratio = lastStack / lastAnt;
+    // Calculate Scaling Ratio between the forcing (y1) and temperature (y)
+    // axes: least-squares fit through the origin of the full driver stack
+    // (CO2 + fast + slow) to human-induced warming over the most recent
+    // years. Fit with all components on, and keep fixed as they are toggled.
+    const FIT_WINDOW_YEARS = 100;
+    const fitStart = data.years[data.years.length - 1] - FIT_WINDOW_YEARS;
+    let sumStackAnt = 0;
+    let sumAntSq = 0;
+    data.years.forEach((y, i) => {
+      if (y <= fitStart) return;
+      const stack = data.co2[i] + data.otherFast[i] + data.otherSlow[i];
+      sumStackAnt += stack * data.ant[i];
+      sumAntSq += data.ant[i] * data.ant[i];
+    });
+    const ratio = sumStackAnt / sumAntSq;
 
     // Calculate dynamic Y-axis bounds
     const allYTempValues = [
@@ -261,28 +280,44 @@
     };
 
     // 2. Other (Top Area - Manually Stacked)
-    // Store original data for animation purposes
-    const ocdStackedPos = data.years.map((y, i) => ({
-      x: y,
-      y: data.co2[i] + Math.max(0, data.other[i]),
-    }));
-    const ocdStackedNeg = data.years.map((y, i) => ({
-      x: y,
-      y: data.co2[i] + Math.min(0, data.other[i]),
-    }));
-    const ocdOriginPos = data.years.map((y, i) => ({
-      x: y,
-      y: Math.max(0, data.other[i]),
-    }));
-    const ocdOriginNeg = data.years.map((y, i) => ({
-      x: y,
-      y: Math.min(0, data.other[i]),
-    }));
+    // The non-CO2 wedge combines the fast (Delta F_N) and slow (Seshadri)
+    // components, which can be toggled independently from the legend. The
+    // wedge is shown while either component is on.
+    const visible = { co2: true, fast: true, slow: true };
+    const ocdVisible = (state) => state.fast || state.slow;
+    // The total line is the full model; the slow term is a second-order
+    // correction, so the line is also shown without it, but not without fast
+    const totalVisible = (state) => state.co2 && state.fast;
+
+    const otherFor = (state, i) =>
+      (state.fast ? data.otherFast[i] : 0) +
+      (state.slow ? data.otherSlow[i] : 0);
+
+    // Target y-values for every animated dataset given a visibility state.
+    // Hidden components collapse to zero, so they animate in and out.
+    const targetsFor = (state) => {
+      const co2 = [];
+      const pos = [];
+      const neg = [];
+      const total = [];
+      data.years.forEach((y, i) => {
+        const base = state.co2 ? data.co2[i] : 0;
+        const other = otherFor(state, i);
+        co2.push(base);
+        pos.push(base + Math.max(0, other));
+        neg.push(base + Math.min(0, other));
+        total.push(
+          data.co2[i] + otherFor({ fast: true, slow: state.slow }, i),
+        );
+      });
+      return { co2, pos, neg, total };
+    };
+    const initialTargets = targetsFor(visible);
 
     // Positive Non-CO2
     const dsOtherPos = {
       label: "Non-CO2 drivers",
-      data: ocdStackedPos.map((p) => ({ ...p })),
+      data: data.years.map((y, i) => ({ x: y, y: initialTargets.pos[i] })),
       backgroundColor: withAlpha(colorNonCO2, 0.6),
       borderColor: "transparent",
       fill: 0, // Fill to dsCO2 (will be updated dynamically)
@@ -295,7 +330,7 @@
     // Negative Non-CO2
     const dsOtherNeg = {
       label: "Non-CO2 drivers (negative)",
-      data: ocdStackedNeg.map((p) => ({ ...p })),
+      data: data.years.map((y, i) => ({ x: y, y: initialTargets.neg[i] })),
       backgroundColor: withAlpha(colorNonCO2Neg, 0.6),
       borderColor: "transparent",
       fill: 0, // Fill to dsCO2 (will be updated dynamically)
@@ -305,10 +340,9 @@
     };
 
     // 2.5 Total Anthropogenic Forcing (Line)
-    const totalForcing = data.co2.map((v, i) => v + data.other[i]);
     const dsTotal = {
       label: "All human-induced drivers",
-      data: data.years.map((y, i) => ({ x: y, y: totalForcing[i] })),
+      data: data.years.map((y, i) => ({ x: y, y: initialTargets.total[i] })),
       borderColor: colorAnthroForcing, // DISTINCT GREY
       backgroundColor: colorAnthroForcing,
       borderWidth: 3,
@@ -468,331 +502,108 @@
             position: "bottom",
             onClick: function (e, legendItem, legend) {
               const chart = legend.chart;
-              const clickedLabel =
-                chart.data.datasets[legendItem.datasetIndex].label;
               const datasets = chart.data.datasets;
 
               // Helper to find dataset index by label
               const findIdx = (label) =>
                 datasets.findIndex((d) => d.label === label);
-              const isVisible = (label) =>
-                chart.isDatasetVisible(findIdx(label));
 
-              // Find all related datasets by semantic label patterns
-              const indicesToToggle = [];
-              datasets.forEach((ds, idx) => {
-                const label = ds.label;
-                if (
-                  clickedLabel === "Annual observations" &&
-                  (label === "Annual observations" ||
-                    label.includes("Observations"))
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Cumulative CO₂ emissions" &&
-                  label.startsWith("Cumulative CO₂")
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (
-                  clickedLabel === "Non-CO2 drivers" &&
-                  label.startsWith("Non-CO2 drivers")
-                ) {
-                  indicesToToggle.push(idx);
-                } else if (label === clickedLabel) {
-                  indicesToToggle.push(idx);
-                }
-              });
-
-              // Determine visibility states BEFORE toggle
-              const co2Visible = isVisible("Cumulative CO₂ emissions");
-              const ocdVisible = isVisible("Non-CO2 drivers");
-              const clickedIsCO2 = clickedLabel === "Cumulative CO₂ emissions";
-              const clickedIsOCD = clickedLabel === "Non-CO2 drivers";
-
-              // Determine visibility states AFTER toggle
-              const co2WillBeVisible = clickedIsCO2 ? !co2Visible : co2Visible;
-              const ocdWillBeVisible = clickedIsOCD ? !ocdVisible : ocdVisible;
-
-              // Get dataset indices
+              const idxCO2Area = findIdx("Cumulative CO₂ emissions area");
+              const idxCO2Line = findIdx("Cumulative CO₂ emissions");
               const idxOtherPos = findIdx("Non-CO2 drivers");
               const idxOtherNeg = findIdx("Non-CO2 drivers (negative)");
               const idxTotal = findIdx("All human-induced drivers");
-              const idxCO2Area = findIdx("Cumulative CO₂ emissions area");
 
-              // Animation helper
-              const animateOCD = (toStacked, callback) => {
-                const duration = 400;
-                const startTime = performance.now();
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                const startPosData = dsPos.data.map((p) => ({ ...p }));
-                const startNegData = dsNeg.data.map((p) => ({ ...p }));
-                const targetPosData = toStacked ? ocdStackedPos : ocdOriginPos;
-                const targetNegData = toStacked ? ocdStackedNeg : ocdOriginNeg;
+              // CO2 and the non-CO2 components are driven by `visible` and
+              // animate between stacked positions; everything else toggles
+              const clickedLabel =
+                chart.data.datasets[legendItem.datasetIndex].label;
+              let key = legendItem.component;
+              if (!key && clickedLabel === "Cumulative CO₂ emissions") {
+                key = "co2";
+              }
 
-                const animate = (currentTime) => {
-                  const elapsed = currentTime - startTime;
-                  const progress = Math.min(elapsed / duration, 1);
-                  const eased = 1 - Math.pow(1 - progress, 3);
+              if (!key) {
+                const indicesToToggle = datasets
+                  .map((ds, idx) => idx)
+                  .filter((idx) => {
+                    const label = datasets[idx].label;
+                    return clickedLabel === "Annual observations"
+                      ? label === "Annual observations" ||
+                          label.includes("Observations")
+                      : label === clickedLabel;
+                  });
+                indicesToToggle.forEach((idx) => {
+                  const meta = chart.getDatasetMeta(idx);
+                  meta.hidden =
+                    meta.hidden === null ? !datasets[idx].hidden : null;
+                });
+                chart.update();
+                return;
+              }
 
-                  for (let i = 0; i < dsPos.data.length; i++) {
-                    dsPos.data[i].y =
-                      startPosData[i].y +
-                      (targetPosData[i].y - startPosData[i].y) * eased;
-                    dsNeg.data[i].y =
-                      startNegData[i].y +
-                      (targetNegData[i].y - startNegData[i].y) * eased;
-                  }
-                  chart.update("none");
+              const from = { ...visible };
+              visible[key] = !visible[key];
+              const to = { ...visible };
+              const targets = targetsFor(to);
 
-                  if (progress < 1) {
-                    requestAnimationFrame(animate);
-                  } else if (callback) {
-                    callback();
-                  }
-                };
-                requestAnimationFrame(animate);
+              const setHidden = (idx, hidden) => {
+                chart.getDatasetMeta(idx).hidden = hidden ? true : null;
               };
 
-              // Case: Toggling CO2 off while OCD is visible
-              if (clickedIsCO2 && co2Visible && ocdWillBeVisible) {
-                // Keep fill tied to the CO2 wedge during animation so the OCD shading base
-                // follows the CO2 line in each frame.
-                datasets[idxOtherPos].fill = idxCO2Area;
-                datasets[idxOtherNeg].fill = idxCO2Area;
+              // Show anything visible at either end of the animation, so
+              // that it can animate in or out. Keep the wedge filled to the
+              // CO2 area while that is drawn, so its base follows the CO2 line.
+              const co2Shown = from.co2 || to.co2;
+              setHidden(idxCO2Area, !co2Shown);
+              setHidden(idxCO2Line, !co2Shown);
+              setHidden(idxOtherPos, !(ocdVisible(from) || ocdVisible(to)));
+              setHidden(idxOtherNeg, !(ocdVisible(from) || ocdVisible(to)));
+              setHidden(idxTotal, !(totalVisible(from) && totalVisible(to)));
+              const fillTarget = co2Shown ? idxCO2Area : "origin";
+              datasets[idxOtherPos].fill = fillTarget;
+              datasets[idxOtherNeg].fill = fillTarget;
 
-                const duration = 400;
-                const startTime = performance.now();
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                const dsCO2 = datasets[idxCO2Area];
-                const dsCO2Line = datasets[findIdx("Cumulative CO₂ emissions")];
-                const startPosData = dsPos.data.map((p) => ({ ...p }));
-                const startNegData = dsNeg.data.map((p) => ({ ...p }));
-                const startCO2Data = dsCO2.data.map((p) => ({ ...p }));
-                const startCO2LineData = dsCO2Line.data.map((p) => ({ ...p }));
+              const animated = [
+                [datasets[idxCO2Area], targets.co2],
+                [datasets[idxCO2Line], targets.co2],
+                [datasets[idxOtherPos], targets.pos],
+                [datasets[idxOtherNeg], targets.neg],
+                [datasets[idxTotal], targets.total],
+              ].map(([ds, target]) => ({
+                ds,
+                start: ds.data.map((p) => p.y),
+                target,
+              }));
 
-                const animate = (currentTime) => {
-                  const elapsed = currentTime - startTime;
-                  const progress = Math.min(elapsed / duration, 1);
-                  const eased = 1 - Math.pow(1 - progress, 3);
+              const duration = 400;
+              const startTime = performance.now();
+              const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
 
-                  for (let i = 0; i < dsPos.data.length; i++) {
-                    // Animate OCD to origin position
-                    dsPos.data[i].y =
-                      startPosData[i].y +
-                      (ocdOriginPos[i].y - startPosData[i].y) * eased;
-                    dsNeg.data[i].y =
-                      startNegData[i].y +
-                      (ocdOriginNeg[i].y - startNegData[i].y) * eased;
-                    // Animate CO2 to zero
-                    dsCO2.data[i].y = startCO2Data[i].y * (1 - eased);
-                    dsCO2Line.data[i].y = startCO2LineData[i].y * (1 - eased);
+                animated.forEach(({ ds, start, target }) => {
+                  for (let i = 0; i < ds.data.length; i++) {
+                    ds.data[i].y = start[i] + (target[i] - start[i]) * eased;
                   }
-                  chart.update("none");
-
-                  if (progress < 1) {
-                    requestAnimationFrame(animate);
-                  } else {
-                    // Detach OCD shading from CO2 before hiding/restoring CO2 datasets.
-                    datasets[idxOtherPos].fill = "origin";
-                    datasets[idxOtherNeg].fill = "origin";
-
-                    // Hide CO2 datasets
-                    indicesToToggle.forEach((idx) => {
-                      chart.getDatasetMeta(idx).hidden = true;
-                    });
-                    chart.getDatasetMeta(idxTotal).hidden = true;
-                    // Restore CO2 data for when it's shown again
-                    for (let i = 0; i < dsCO2.data.length; i++) {
-                      dsCO2.data[i].y = startCO2Data[i].y;
-                      dsCO2Line.data[i].y = startCO2LineData[i].y;
-                    }
-                    chart.update();
-                  }
-                };
-                requestAnimationFrame(animate);
-                return;
-              }
-
-              // Case: Toggling CO2 on while OCD is visible
-              if (clickedIsCO2 && !co2Visible && ocdWillBeVisible) {
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                const dsCO2 = datasets[idxCO2Area];
-                const dsCO2Line = datasets[findIdx("Cumulative CO₂ emissions")];
-
-                // Store target CO2 values and start CO2 at zero
-                const targetCO2Data = dsCO2.data.map((p) => ({ ...p }));
-                for (let i = 0; i < dsCO2.data.length; i++) {
-                  dsCO2.data[i].y = 0;
-                  dsCO2Line.data[i].y = 0;
-                }
-
-                // Show CO2 and Total, keep OCD fill tied to CO2 during the animation so the
-                // OCD wedge base rises with the CO2 line each frame.
-                indicesToToggle.forEach((idx) => {
-                  chart.getDatasetMeta(idx).hidden = null;
-                });
-                chart.getDatasetMeta(idxTotal).hidden = null;
-                datasets[idxOtherPos].fill = idxCO2Area;
-                datasets[idxOtherNeg].fill = idxCO2Area;
-                chart.update("none");
-
-                const duration = 400;
-                const startTime = performance.now();
-                const startPosData = dsPos.data.map((p) => ({ ...p }));
-                const startNegData = dsNeg.data.map((p) => ({ ...p }));
-
-                const animate = (currentTime) => {
-                  const elapsed = currentTime - startTime;
-                  const progress = Math.min(elapsed / duration, 1);
-                  const eased = 1 - Math.pow(1 - progress, 3);
-
-                  for (let i = 0; i < dsPos.data.length; i++) {
-                    // Animate CO2 from zero to target
-                    dsCO2.data[i].y = targetCO2Data[i].y * eased;
-                    dsCO2Line.data[i].y = targetCO2Data[i].y * eased;
-                    // Animate OCD from origin to stacked
-                    dsPos.data[i].y =
-                      startPosData[i].y +
-                      (ocdStackedPos[i].y - startPosData[i].y) * eased;
-                    dsNeg.data[i].y =
-                      startNegData[i].y +
-                      (ocdStackedNeg[i].y - startNegData[i].y) * eased;
-                  }
-                  chart.update("none");
-
-                  if (progress < 1) {
-                    requestAnimationFrame(animate);
-                  } else {
-                    // Switch fill to CO2 at end
-                    datasets[idxOtherPos].fill = idxCO2Area;
-                    datasets[idxOtherNeg].fill = idxCO2Area;
-                    chart.update();
-                  }
-                };
-                requestAnimationFrame(animate);
-                return;
-              }
-
-              // Case: Toggling OCD off while CO2 is visible
-              if (clickedIsOCD && ocdVisible && co2WillBeVisible) {
-                const duration = 400;
-                const startTime = performance.now();
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                const startPosData = dsPos.data.map((p) => ({ ...p }));
-                const startNegData = dsNeg.data.map((p) => ({ ...p }));
-                const targetData = data.co2.map((v, i) => ({
-                  x: data.years[i],
-                  y: v,
-                }));
-
-                const animate = (currentTime) => {
-                  const elapsed = currentTime - startTime;
-                  const progress = Math.min(elapsed / duration, 1);
-                  const eased = 1 - Math.pow(1 - progress, 3);
-
-                  for (let i = 0; i < dsPos.data.length; i++) {
-                    dsPos.data[i].y =
-                      startPosData[i].y +
-                      (targetData[i].y - startPosData[i].y) * eased;
-                    dsNeg.data[i].y =
-                      startNegData[i].y +
-                      (targetData[i].y - startNegData[i].y) * eased;
-                  }
-                  chart.update("none");
-
-                  if (progress < 1) {
-                    requestAnimationFrame(animate);
-                  } else {
-                    indicesToToggle.forEach((idx) => {
-                      chart.getDatasetMeta(idx).hidden = true;
-                    });
-                    chart.getDatasetMeta(idxTotal).hidden = true;
-                    for (let i = 0; i < dsPos.data.length; i++) {
-                      dsPos.data[i].y = ocdStackedPos[i].y;
-                      dsNeg.data[i].y = ocdStackedNeg[i].y;
-                    }
-                    chart.update();
-                  }
-                };
-                requestAnimationFrame(animate);
-                return;
-              }
-
-              // Case: Toggling OCD on while CO2 is visible
-              if (clickedIsOCD && !ocdVisible && co2WillBeVisible) {
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                for (let i = 0; i < dsPos.data.length; i++) {
-                  dsPos.data[i].y = data.co2[i];
-                  dsNeg.data[i].y = data.co2[i];
-                }
-                datasets[idxOtherPos].fill = idxCO2Area;
-                datasets[idxOtherNeg].fill = idxCO2Area;
-                indicesToToggle.forEach((idx) => {
-                  chart.getDatasetMeta(idx).hidden = null;
-                });
-                chart.getDatasetMeta(idxTotal).hidden = null;
-                chart.update("none");
-                animateOCD(true);
-                return;
-              }
-
-              // Case: Toggling OCD off while CO2 is NOT visible
-              if (clickedIsOCD && ocdVisible && !co2WillBeVisible) {
-                animateOCD(false, () => {
-                  indicesToToggle.forEach((idx) => {
-                    chart.getDatasetMeta(idx).hidden = true;
-                  });
-                  chart.update();
-                });
-                return;
-              }
-
-              // Case: Toggling OCD on while CO2 is NOT visible
-              if (clickedIsOCD && !ocdVisible && !co2WillBeVisible) {
-                const dsPos = datasets[idxOtherPos];
-                const dsNeg = datasets[idxOtherNeg];
-                for (let i = 0; i < dsPos.data.length; i++) {
-                  dsPos.data[i].y = 0;
-                  dsNeg.data[i].y = 0;
-                }
-                datasets[idxOtherPos].fill = "origin";
-                datasets[idxOtherNeg].fill = "origin";
-                indicesToToggle.forEach((idx) => {
-                  chart.getDatasetMeta(idx).hidden = null;
                 });
                 chart.update("none");
-                animateOCD(false);
-                return;
-              }
 
-              // Default behavior for other toggles
-              indicesToToggle.forEach((idx) => {
-                const meta = chart.getDatasetMeta(idx);
-                meta.hidden =
-                  meta.hidden === null ? !datasets[idx].hidden : null;
-              });
-
-              // Auto-hide Total line if either CO2 or OCD is hidden
-              if (clickedIsCO2 || clickedIsOCD) {
-                const finalCO2Visible = chart.isDatasetVisible(
-                  findIdx("Cumulative CO₂ emissions"),
-                );
-                const finalOCDVisible = chart.isDatasetVisible(
-                  findIdx("Non-CO2 drivers"),
-                );
-                if (!finalCO2Visible || !finalOCDVisible) {
-                  chart.getDatasetMeta(idxTotal).hidden = true;
+                if (progress < 1) {
+                  requestAnimationFrame(animate);
                 } else {
-                  chart.getDatasetMeta(idxTotal).hidden = null;
+                  setHidden(idxCO2Area, !to.co2);
+                  setHidden(idxCO2Line, !to.co2);
+                  setHidden(idxOtherPos, !ocdVisible(to));
+                  setHidden(idxOtherNeg, !ocdVisible(to));
+                  setHidden(idxTotal, !totalVisible(to));
+                  datasets[idxOtherPos].fill = to.co2 ? idxCO2Area : "origin";
+                  datasets[idxOtherNeg].fill = to.co2 ? idxCO2Area : "origin";
+                  chart.update();
                 }
-              }
-
-              chart.update();
+              };
+              requestAnimationFrame(animate);
             },
             labels: {
               usePointStyle: true,
@@ -883,27 +694,32 @@
                   });
                 }
 
-                // 5. Non-CO2 drivers - split color swatch
+                // 5. Non-CO2 drivers - split color swatch, one item per
+                // component; both components share the one wedge
                 const dsOtherPosData = findDS("Non-CO2 drivers");
                 const dsOtherNegData = findDS(
                   "Non-CO2 drivers (negative)",
                 );
                 if (dsOtherPosData && dsOtherNegData) {
-                  items.push({
-                    text: "Non-CO2 drivers",
-                    fillStyle: dsOtherPosData.backgroundColor,
-                    strokeStyle: "transparent",
-                    lineWidth: 0,
-                    pointStyle: createSplitColorSwatch(
-                      dsOtherNegData.backgroundColor,
-                      dsOtherPosData.backgroundColor,
-                      25,
-                      12,
-                    ),
-                    hidden: !chart.isDatasetVisible(
-                      findIdx("Non-CO2 drivers"),
-                    ),
-                    datasetIndex: findIdx("Non-CO2 drivers"),
+                  [
+                    ["fast", "Non-CO2 drivers (fast)"],
+                    ["slow", "Non-CO2 drivers (slow)"],
+                  ].forEach(([component, text]) => {
+                    items.push({
+                      text,
+                      component,
+                      fillStyle: dsOtherPosData.backgroundColor,
+                      strokeStyle: "transparent",
+                      lineWidth: 0,
+                      pointStyle: createSplitColorSwatch(
+                        dsOtherNegData.backgroundColor,
+                        dsOtherPosData.backgroundColor,
+                        25,
+                        12,
+                      ),
+                      hidden: !visible[component],
+                      datasetIndex: findIdx("Non-CO2 drivers"),
+                    });
                   });
                 }
 
@@ -919,23 +735,42 @@
               },
               label: (context) => {
                 let label = context.dataset.label || "";
-                // Hide datasets that shouldn't appear in tooltip
+                // Hide datasets that shouldn't appear in tooltip. The total
+                // line is scaled to compare shape only, so its values aren't
+                // meaningful on either axis
                 if (
                   label.includes("Range") ||
                   label.includes("area") ||
-                  label.includes("(negative)")
+                  label.includes("(negative)") ||
+                  label === "All human-induced drivers"
                 ) {
                   return null;
                 }
 
-                // SHOW ISOLATED VALUE FOR "OTHER"
+                // SHOW ISOLATED VALUE FOR "OTHER", with its components
                 if (label === "Non-CO2 drivers") {
-                  const val = data.other[context.dataIndex];
-                  return label + ": " + val.toFixed(3);
+                  const i = context.dataIndex;
+                  const parts = [];
+                  if (visible.fast) {
+                    parts.push("fast " + data.otherFast[i].toFixed(3));
+                  }
+                  if (visible.slow) {
+                    parts.push("slow " + data.otherSlow[i].toFixed(3));
+                  }
+                  return (
+                    label +
+                    ": " +
+                    otherFor(visible, i).toFixed(3) +
+                    " W/m² (" +
+                    parts.join(", ") +
+                    ")"
+                  );
                 }
 
+                const unit =
+                  label === "Cumulative CO₂ emissions" ? "TtCO₂" : "°C";
                 let value = context.parsed.y;
-                let str = label + ": " + value.toFixed(3);
+                let str = label + ": " + value.toFixed(3) + " " + unit;
 
                 if (
                   label === "Cumulative CO₂ emissions" &&
@@ -953,7 +788,7 @@
                     if (point && Array.isArray(point.y)) {
                       const low = point.y[0].toFixed(3);
                       const high = point.y[1].toFixed(3);
-                      str += ` [${low} - ${high}]`;
+                      str += ` [${low} - ${high} °C]`;
                     }
                   }
                 }
@@ -963,7 +798,7 @@
                 const label = context.dataset.label || "";
                 // Dynamic color for "Non-CO2 drivers" based on value
                 if (label === "Non-CO2 drivers") {
-                  const val = data.other[context.dataIndex];
+                  const val = otherFor(visible, context.dataIndex);
                   const color =
                     val >= 0
                       ? withAlpha(colorNonCO2, 0.6)

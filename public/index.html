@@ -188,7 +188,9 @@
           <span class="text-non-co2-blend">Non-CO<sub>2</sub> drivers</span> shows
           the net impact from a long list of other human activities that affect
           the Earth's energy balance, some of which cause warming and some
-          cooling.
+          cooling. This combines a <em>fast</em> response to the current level
+          of these drivers with a small <em>slow</em> response to their
+          accumulated effect over time.
         </p>
         <p class="text-center fig-caption">
           Click items in the legend to show/hide different lines.
@@ -232,7 +234,7 @@
         In the second figure above, the total 
         <span class="text-anthropogenic">human-induced global warming</span>
         estimated from observed temperatures is given almost exactly by simply
-        adding the warming caused
+        adding the warming caused by
         <span class="text-co2">cumulative CO<sub>2</sub> emissions</span>
         to the temperature changes caused by 
         <span class="text-non-co2-blend">other human activities</span>:
@@ -248,47 +250,63 @@
           <li>
             <strong>proportional</strong>
             to total cumulative carbon dioxide emissions over that time-interval
-            (<span class="text-co2"><em>E</em></span>)
+            (<span class="text-co2"><em>\( \bar E_C \, \Delta t \)</em></span>)
           </li>
           <li>
             <strong>plus</strong> the impact of any change in global energy
             imbalance due to other human influences on climate
-            (<span class="text-non-co2-blend"><em>&Delta;F</em></span>).
+            (<span class="text-non-co2-blend"><em>&Delta;F<sub>N</sub></em></span>),
+          </li>
+          <li>
+            <strong>plus</strong> a small, slow adjustment to those other
+            influences that builds up over time, proportional to their
+            time-integrated effect
+            (<span class="text-non-co2-blend"><em>\( \rho \, \bar F_N \, \Delta t \)</em></span>).
           </li>
         </ul>
       </p>
 
       <p>
         This relationship captures the main drivers of human-induced global
-        warming, which can be written as a very approximate first-order
-        equation:
+        warming, which can be written as a very approximate equation:
       </p>
 
       <div class="equation-container">
         \[
           {\color{var(--color-plot-anthropogenic)} {\Delta T}}
-          = 
-          {\color{black} \kappa_E } \cdot
-          
-          <!-- \left( -->
-          
-          {\color{var(--color-plot-co2)} E}
-          
+          \approx
+          {\color{black} \kappa_E } \,
+          {\color{var(--color-plot-co2)} {\bar E_C \, \Delta t}}
+          \;+\;
+          {\color{black} \kappa_F }
+          \left(
+          {\color{var(--color-plot-non-co2)} {\Delta F_N}}
           +
-          
-          <!-- \frac{{\color{black} \kappa_F}}{{\color{black} \kappa_E }} -->
-          
-          {\color{black} \kappa_F } \cdot
-          {\color{var(--color-plot-non-co2)} {\Delta F}}
-          
-          <!-- \right) -->
+          {\color{black} \rho } \,
+          {\color{var(--color-plot-non-co2)} {\bar F_N \, \Delta t}}
+          \right)
         \]
       </div>
 
       <p>
-        where
-      <ul>  
+        over an interval <em>\( \Delta t \)</em>, where:
+      <ul>
 
+        <li>
+          <em>\(\Delta T \)</em> is the change in global mean temperature over the interval
+        </li>
+        <li>
+          <em>\( \bar E_C \, \Delta t \)</em> is the average CO<sub>2</sub>
+          emissions times the length of the interval
+        </li>
+        <li>
+          <em>\( \Delta F_N \)</em> is the change in non-CO<sub>2</sub>
+          effective radiative forcing over the interval
+        </li>
+        <li>
+          <em>\( \bar F_N \, \Delta t \)</em> is the average non-CO<sub>2</sub>
+          effective radiative forcing times the length of the interval
+        </li>
         <li>
           <em>\( \kappa_E \)</em> is the
           "Transient Climate Response to Emissions",
@@ -323,9 +341,28 @@
             </li>
           </ul> -->
         </li>
+        <li>
+          <em>\( \rho \)</em> is the
+          "Rate of Adjustment to Constant Forcing",
+          about 0.3% per year
+          <span class="citation">
+            (Seshadri, 2017: Origin of path independence between cumulative
+            CO<sub>2</sub> emissions and global warming)
+          </span>.
+        </li>
       </ul>
       </p>
       
+      <p>
+        If the beginning of the interval is some pre-industrial reference
+        time, and the end of the interval is the present, then
+        <em>\( \Delta T \)</em> is the current level of human-induced warming,
+        <em>\( \bar E_C \, \Delta t \)</em> is the total cumulative CO<sub>2</sub>
+        emissions, <em>\( \Delta F_N \)</em> is the current level of non-CO<sub>2</sub> forcing, and
+        <em>\( \bar F_N \, \Delta t \)</em> is the time-integrated non-CO<sub>2</sub> forcing.
+      </p>
+
+
       <p>
         While the full scientific calculation of the Global Warming Index
         involves more accurate calculations, this simple equation is a good

@@ -25,6 +25,10 @@
     // HadCRUT5 default realization count (dynamically overridden if data differs)
     HADCRUT_REALIZATION_COUNT: 200,
 
+    // Rate of Adjustment to Constant Forcing (rho, 1/yr), scaling the slow
+    // response to time-integrated non-CO2 forcing (Seshadri, 2017)
+    RACF: 0.003,
+
     // Chart appearance constants
     PLUME_ALPHA: 0.2,
     FAINT_ALPHA: 0.1,
