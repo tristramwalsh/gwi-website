@@ -1,3 +1,0 @@
-# gwi-docker
-
-
